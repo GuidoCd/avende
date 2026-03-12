@@ -1,0 +1,23 @@
+{
+    "Login": "Login",
+    "Register": "Register",
+    "Email": "Email",
+    "Password": "Password",
+    "Remember me": "Remember me",
+    "Forgot your password?": "Forgot your password?",
+    "Log in": "Log in",
+    "Name": "Full Name",
+    "Confirm Password": "Confirm Password",
+    "Already registered?": "Already registered?",
+    "Search Location...": "Search Location...",
+    "Property Type": "Property Type",
+    "All Types": "All Types",
+    "Filter": "Filter",
+    "Price": "Price",
+    "Dashboard": "Dashboard",
+    "Profile": "Profile",
+    "Log Out": "Log Out",
+    "Home": "Home",
+    "Publisher View": "Publisher View",
+    "Visitor View": "Visitor View"
+}

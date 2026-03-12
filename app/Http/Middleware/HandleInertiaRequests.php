@@ -43,6 +43,13 @@ class HandleInertiaRequests extends Middleware
                 'roles' => $request->user() ? $request->user()->getRoleNames() : [],
                 'permissions' => $request->user() ? $request->user()->getAllPermissions()->pluck('name') : [],
             ],
+            'locale' => function () {
+                return app()->getLocale();
+            },
+            'translations' => function () {
+                $path = lang_path(app()->getLocale() . '.json');
+                return file_exists($path) ? json_decode(file_get_contents($path), true) : [];
+            },
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

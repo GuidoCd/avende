@@ -1,0 +1,23 @@
+{
+    "Login": "Ingresar",
+    "Register": "Registrar",
+    "Email": "Correo electrónico",
+    "Password": "Contraseña",
+    "Remember me": "Recordarme",
+    "Forgot your password?": "¿Olvidaste tu contraseña?",
+    "Log in": "Iniciar sesión",
+    "Name": "Nombre completo",
+    "Confirm Password": "Confirmar contraseña",
+    "Already registered?": "¿Ya tienes cuenta?",
+    "Search Location...": "Buscar ubicación...",
+    "Property Type": "Tipo de propiedad",
+    "All Types": "Todos los tipos",
+    "Filter": "Filtros",
+    "Price": "Precio",
+    "Dashboard": "Panel",
+    "Profile": "Perfil",
+    "Log Out": "Cerrar sesión",
+    "Home": "Inicio",
+    "Publisher View": "Modo Publicador",
+    "Visitor View": "Modo Visitante"
+}
