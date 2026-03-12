@@ -116,7 +116,7 @@ const handlePropertySelect = (property: any) => {
     <Head>
         <title>Vive Aquí - Encuentra tu próximo hogar</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     </Head>
 
@@ -147,11 +147,6 @@ const handlePropertySelect = (property: any) => {
         </button>
 
         <!-- Inertia Auth Navigation Links (Hidden or positioned appropriately if needed) -->
-        <div class="absolute top-6 right-6 z-30 hidden lg:flex gap-4 items-center">
-            <a v-if="$page.props.auth?.user" href="/dashboard" class="px-4 py-2 font-semibold text-white bg-emerald-600 rounded-full shadow-lg hover:bg-emerald-700 transition-colors">
-                Dashboard
-            </a>
-        </div>
         
         <AuthModal :is-open="isAuthModalOpen" @close="isAuthModalOpen = false" />
     </div>
