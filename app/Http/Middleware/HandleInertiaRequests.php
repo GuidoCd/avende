@@ -44,10 +44,11 @@ class HandleInertiaRequests extends Middleware
                 'permissions' => $request->user() ? $request->user()->getAllPermissions()->pluck('name') : [],
             ],
             'locale' => function () {
-                return app()->getLocale();
+                return session('locale', config('app.locale', 'es'));
             },
             'translations' => function () {
-                $path = lang_path(app()->getLocale() . '.json');
+                $locale = session('locale', config('app.locale', 'es'));
+                $path = lang_path($locale . '.json');
                 return file_exists($path) ? json_decode(file_get_contents($path), true) : [];
             },
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
