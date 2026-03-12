@@ -17,6 +17,18 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(App, props) })
             .use(plugin)
+            .mixin({
+                methods: {
+                    __(key: string, replace: Record<string, string> = {}) {
+                        const translations = (this.$page.props.translations as Record<string, string>) || {};
+                        let translation = translations[key] || key;
+                        Object.keys(replace).forEach((placeholder) => {
+                            translation = translation.replace(`:${placeholder}`, replace[placeholder]);
+                        });
+                        return translation;
+                    },
+                },
+            })
             .mount(el);
     },
     progress: {
