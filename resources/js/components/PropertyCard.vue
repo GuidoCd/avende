@@ -3,7 +3,7 @@
     <div class="relative rounded-xl overflow-hidden aspect-4/3 mb-3 bg-gray-100 dark:bg-zinc-900">
       <img :src="property.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'" alt="Property thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
       <div class="absolute top-2 left-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold text-gray-900 dark:text-white shadow-sm">
-        Para {{ property.type === 'rent' ? 'Renta' : 'Venta' }}
+        {{ property.type === 'rent' ? __('For Rent') : __('For Sale') }}
       </div>
       <!-- 360 View Button Placeholder -->
       <button v-if="property.has360" class="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 backdrop-blur-sm text-white p-2 rounded-full transition-colors flex items-center justify-center">

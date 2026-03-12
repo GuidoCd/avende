@@ -18,14 +18,14 @@
       <div>
         <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
           <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
-          Propiedades
+          {{ __('Properties') }}
         </h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ properties.length }} resultados encontrados</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ properties.length }} {{ __('results found') }}</p>
       </div>
       <!-- Sort/Filter minimal toggle -->
       <button class="text-sky-500 hover:text-sky-600 dark:text-sky-400 dark:hover:text-sky-300 font-medium text-sm flex items-center gap-1 transition-colors bg-sky-50 dark:bg-sky-500/10 px-3 py-1.5 rounded-full">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-        Más cercanos
+        {{ __('Nearest') }}
       </button>
     </div>
 

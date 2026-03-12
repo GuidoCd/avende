@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute top-6 left-1/2 -translate-x-1/2 z-10 w-[90%] md:w-[600px]">
+  <div class="absolute top-6 left-1/2 -translate-x-1/2 z-10 w-[92%] sm:w-[90%] md:w-[700px] lg:w-[850px] transition-all duration-300">
     <div class="bg-white/80 backdrop-blur-md dark:bg-zinc-900/80 border border-white/20 dark:border-zinc-800/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full p-2 flex items-center justify-between transition-all duration-300">
       
       <!-- Brand / Logo -->
@@ -15,18 +15,18 @@
         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         <input 
           type="text" 
-          placeholder="Busca por colonia, dirección o código postal..." 
+          :placeholder="__('Search Location...')" 
           class="bg-transparent border-none outline-none focus:ring-0 w-full text-gray-900 dark:text-white placeholder-gray-400 flex-1 min-w-0"
         />
       </div>
 
-      <!-- Controls -->
-      <div class="flex items-center gap-1.5 pr-1">
+      <!-- Controls / Actions -->
+      <div class="flex items-center gap-1 sm:gap-1.5 pr-1 shrink-0">
         <!-- Filter Toggle -->
         <div class="relative">
           <button @click="isFiltersOpen = !isFiltersOpen" class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-emerald-50 text-emerald-700 dark:hover:bg-zinc-800 transition-colors text-sm font-medium dark:text-gray-200 whitespace-nowrap bg-emerald-100 dark:bg-emerald-900/30">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-            <span class="hidden sm:inline">Filtros</span>
+            <span class="hidden sm:inline">{{ __('Filter') }}</span>
           </button>
         </div>
 
@@ -57,11 +57,11 @@
                 <div class="py-1">
                   <Link href="/profile" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-zinc-700 dark:hover:text-white gap-2 transition-colors">
                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                     Mi Cuenta
+                     {{ __('My Account') }}
                   </Link>
-                  <Link href="#" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-zinc-700 dark:hover:text-white gap-2 transition-colors">
+                  <Link href="/profile/favorites" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-zinc-700 dark:hover:text-white gap-2 transition-colors">
                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                     Mis Favoritos
+                     {{ __('My Favorites') }}
                   </Link>
                   <div class="border-t border-gray-100 dark:border-zinc-700 my-1"></div>
                   <Link href="/logout" method="post" as="button" class="w-full text-left flex items-center px-4 py-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 gap-2 transition-colors">
@@ -75,11 +75,46 @@
         </template>
         <template v-else>
           <!-- Auth Toggle -->
-          <button @click="$emit('open-auth')" class="bg-[#008f39] hover:bg-emerald-700 text-white px-4 py-2 rounded-full shadow-md font-medium transition-colors whitespace-nowrap flex items-center gap-1.5 text-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-            Ingresar
+          <button @click="$emit('open-auth')" class="bg-[#008f39] hover:bg-emerald-700 text-white px-3 sm:px-4 py-2 rounded-full shadow-md font-medium transition-colors whitespace-nowrap flex items-center gap-1.5 text-sm">
+            <svg class="w-4 h-4 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            {{ __('Login') }}
           </button>
         </template>
+
+        <!-- Divisor -->
+        <div class="w-px h-6 bg-gray-200 dark:bg-zinc-700 mx-1 hidden sm:block"></div>
+
+        <!-- Language Selector -->
+        <div class="relative">
+          <button @click="isLangMenuOpen = !isLangMenuOpen" class="flex items-center gap-1 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors text-gray-500 dark:text-gray-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
+            <span class="text-xs font-semibold uppercase hidden sm:block">{{ currentLocale }}</span>
+          </button>
+
+          <!-- Language Dropdown Menu -->
+          <transition
+            enter-active-class="transition ease-out duration-100"
+            enter-from-class="transform opacity-0 scale-95"
+            enter-to-class="transform opacity-100 scale-100"
+            leave-active-class="transition ease-in duration-75"
+            leave-from-class="transform opacity-100 scale-100"
+            leave-to-class="transform opacity-0 scale-95"
+          >
+            <div v-if="isLangMenuOpen" class="absolute right-0 mt-2 w-32 rounded-xl shadow-lg bg-white dark:bg-zinc-800 ring-1 ring-black ring-opacity-5 dark:ring-white/10 overflow-hidden text-sm z-50">
+              <div class="py-1">
+                <button @click="changeLanguage('es')" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors flex items-center justify-between" :class="{'text-[#008f39] font-bold': currentLocale === 'es', 'text-gray-700 dark:text-gray-300': currentLocale !== 'es'}">
+                  Español <span v-if="currentLocale === 'es'">✓</span>
+                </button>
+                <button @click="changeLanguage('en')" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors flex items-center justify-between" :class="{'text-[#008f39] font-bold': currentLocale === 'en', 'text-gray-700 dark:text-gray-300': currentLocale !== 'en'}">
+                  English <span v-if="currentLocale === 'en'">✓</span>
+                </button>
+                <button @click="changeLanguage('pt')" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors flex items-center justify-between" :class="{'text-[#008f39] font-bold': currentLocale === 'pt', 'text-gray-700 dark:text-gray-300': currentLocale !== 'pt'}">
+                  Português <span v-if="currentLocale === 'pt'">✓</span>
+                </button>
+              </div>
+            </div>
+          </transition>
+        </div>
 
         <!-- Dark Mode Toggle -->
         <button @click="toggleDarkMode" class="p-2 ml-1 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors text-gray-500 dark:text-gray-400">
@@ -101,23 +136,23 @@
         
         <!-- Types -->
         <div class="flex items-center gap-3 mb-4 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent">
-          <span class="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0 w-14">Tipo</span>
-          <button class="px-4 py-1.5 rounded-full text-sm font-medium bg-[#008f39] text-white shrink-0 shadow-sm">Todos</button>
-          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">Apartamento</button>
-          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">Casa</button>
+          <span class="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0 w-14">{{ __('Property Type') }}</span>
+          <button class="px-4 py-1.5 rounded-full text-sm font-medium bg-[#008f39] text-white shrink-0 shadow-sm">{{ __('All Types') }}</button>
+          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">{{ __('Apartment') }}</button>
+          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">{{ __('House') }}</button>
           <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">Penthouse</button>
-          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">Studio</button>
+          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">{{ __('Studio') }}</button>
           <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">Townhouse</button>
         </div>
 
         <!-- Prices -->
         <div class="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent">
-          <span class="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0 w-14">Precio</span>
-          <button class="px-4 py-1.5 rounded-full text-sm font-medium bg-[#00a8cc] text-white shrink-0">Cualquier precio</button>
+          <span class="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0 w-14">{{ __('Price') }}</span>
+          <button class="px-4 py-1.5 rounded-full text-sm font-medium bg-[#00a8cc] text-white shrink-0">{{ __('Any price') }}</button>
           <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">< $15k/mes</button>
           <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">$15k–$40k/mes</button>
           <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">> $40k/mes</button>
-          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">Venta</button>
+          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">{{ __('Sale') }}</button>
         </div>
       </div>
     </transition>
@@ -125,18 +160,33 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { Link, usePage, router } from '@inertiajs/vue3';
 
 defineEmits(['open-auth', 'search']);
 
+const page = usePage();
+const currentLocale = computed(() => page.props.locale || 'es');
+
 const isFiltersOpen = ref(false);
 const isUserMenuOpen = ref(false);
+const isLangMenuOpen = ref(false);
 const isDark = ref(false);
+
+const changeLanguage = (lang) => {
+  isLangMenuOpen.value = false;
+  router.post('/language', { locale: lang }, {
+    preserveScroll: true,
+    preserveState: false, // Force a hard refresh of Inertia state
+  });
+};
 
 const closeDropdowns = (e) => {
   if (isUserMenuOpen.value && !e.target.closest('.relative')) {
     isUserMenuOpen.value = false;
+  }
+  if (isLangMenuOpen.value && !e.target.closest('.relative')) {
+    isLangMenuOpen.value = false;
   }
 };
 
