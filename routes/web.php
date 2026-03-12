@@ -1,14 +1,22 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Features;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 
-Route::inertia('/', 'Welcome', [
-    'canRegister' => Features::enabled(Features::registration()),
-])->name('home');
+use App\Http\Controllers\Profile\ProfileController;
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+Route::inertia('/', 'Welcome')->name('home');
+
+Route::middleware('guest')->group(function () {
+    Route::post('login', [LoginController::class, 'store'])->name('login.store');
+    Route::post('register', [RegisteredUserController::class, 'store'])->name('register.store');
 });
 
-require __DIR__.'/settings.php';
+Route::middleware(['auth'])->group(function () {
+    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+    Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
+});
+
+// require __DIR__.'/settings.php';
