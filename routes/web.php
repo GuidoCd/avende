@@ -13,9 +13,13 @@ Route::middleware('guest')->group(function () {
     Route::post('register', [RegisteredUserController::class, 'store'])->name('register.store');
 });
 
+Route::post('/language', [\App\Http\Controllers\LocaleController::class, 'update'])->name('locale.update');
+
 Route::middleware(['auth'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
     Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('profile/favorites', [\App\Http\Controllers\Profile\FavoriteController::class, 'index'])->name('profile.favorites');
+    Route::get('profile/security', [\App\Http\Controllers\Profile\SecurityController::class, 'show'])->name('profile.security');
     Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
 });
 
