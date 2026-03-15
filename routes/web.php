@@ -21,6 +21,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('profile/favorites', [\App\Http\Controllers\Profile\FavoriteController::class, 'index'])->name('profile.favorites');
     Route::get('profile/security', [\App\Http\Controllers\Profile\SecurityController::class, 'show'])->name('profile.security');
     Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
+
+    // Publisher Routes (Add publisher role middleware here later if needed)
+    Route::prefix('publisher')->name('publisher.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Publisher\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/properties', [\App\Http\Controllers\Publisher\PropertyController::class, 'index'])->name('properties.index');
+        Route::get('/properties/create', [\App\Http\Controllers\Publisher\PropertyController::class, 'create'])->name('properties.create');
+        Route::post('/properties', [\App\Http\Controllers\Publisher\PropertyController::class, 'store'])->name('properties.store');
+    });
 });
 
 // require __DIR__.'/settings.php';
