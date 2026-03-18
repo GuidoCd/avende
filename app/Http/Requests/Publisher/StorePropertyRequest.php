@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Publisher;
 
-use App\Enums\PropertyType;
-use App\Enums\PropertyStatus;
+use App\Enums\Property\PropertyStatus;
+use App\Enums\Property\PropertyType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -14,7 +14,7 @@ class StorePropertyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->role === 'publisher'; // Or your specific role check logic
+        return true;
     }
 
     /**
