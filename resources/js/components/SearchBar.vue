@@ -12,8 +12,12 @@
 
       <!-- Search Input -->
       <div class="flex-1 flex items-center px-4 gap-2 text-gray-500 dark:text-gray-400">
-        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <button @click="handleSearch" class="focus:outline-none p-2 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-800 rounded-full transition-colors cursor-pointer shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </button>
         <input 
+          v-model="searchQuery"
+          @keyup.enter="handleSearch"
           type="text" 
           :placeholder="__('Search Location...')" 
           class="bg-transparent border-none outline-none focus:ring-0 w-full text-gray-900 dark:text-white placeholder-gray-400 flex-1 min-w-0"
@@ -149,9 +153,9 @@
         <div class="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent">
           <span class="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0 w-14">{{ __('Price') }}</span>
           <button class="px-4 py-1.5 rounded-full text-sm font-medium bg-[#00a8cc] text-white shrink-0">{{ __('Any price') }}</button>
-          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">< $15k/mes</button>
+          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">&lt; $15k/mes</button>
           <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">$15k–$40k/mes</button>
-          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">> $40k/mes</button>
+          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">&gt; $40k/mes</button>
           <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">{{ __('Sale') }}</button>
         </div>
       </div>
@@ -159,21 +163,22 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+<script setup lang="ts">
 import { Link, usePage, router } from '@inertiajs/vue3';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 
-defineEmits(['open-auth', 'search']);
+const emit = defineEmits(['open-auth', 'search', 'location-searched']);
 
 const page = usePage();
 const currentLocale = computed(() => page.props.locale || 'es');
+const searchQuery = ref(page.props.filters?.search || '');
 
 const isFiltersOpen = ref(false);
 const isUserMenuOpen = ref(false);
 const isLangMenuOpen = ref(false);
 const isDark = ref(false);
 
-const changeLanguage = (lang) => {
+const changeLanguage = (lang: string) => {
   isLangMenuOpen.value = false;
   router.post('/language', { locale: lang }, {
     preserveScroll: true,
@@ -181,8 +186,24 @@ const changeLanguage = (lang) => {
   });
 };
 
-const closeDropdowns = (e) => {
-  if (isUserMenuOpen.value && !e.target.closest('.relative')) {
+const handleSearch = async () => {
+  if (!searchQuery.value) return;
+  try {
+    const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
+    const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery.value)}.json?access_token=${mapboxToken}`);
+    const data = await res.json();
+    if (data.features && data.features.length > 0) {
+      const [lng, lat] = data.features[0].center;
+      emit('location-searched', { lng, lat, term: searchQuery.value });
+    }
+  } catch (e) {
+    console.error('Failed to geocode search', e);
+  }
+};
+
+const closeDropdowns = (e: MouseEvent) => {
+  const target = e.target as HTMLElement;
+  if (isUserMenuOpen.value && !target.closest('.relative')) {
     isUserMenuOpen.value = false;
   }
   if (isLangMenuOpen.value && !e.target.closest('.relative')) {

@@ -13,7 +13,7 @@
     
     <div>
       <div class="font-bold text-lg text-emerald-600 dark:text-emerald-400 mb-1">
-        ${{ property.price.toLocaleString() }}<span v-if="property.type === 'rent'" class="text-sm font-normal text-gray-500">/mes</span>
+        ${{ property.price ? (property.price).toLocaleString() : '0' }}<span v-if="property.type === 'rent'" class="text-sm font-normal text-gray-500">/mes</span>
       </div>
       <h3 class="font-semibold text-gray-900 dark:text-white truncate mb-1" :title="property.title">{{ property.title }}</h3>
       <p class="text-xs text-gray-500 dark:text-gray-400 truncate flex items-center gap-1 mb-3">
@@ -39,7 +39,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
   property: {
     type: Object,

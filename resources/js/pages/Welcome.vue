@@ -6,6 +6,8 @@ import MapboxMap from '../components/MapboxMap.vue';
 import PropertySidebar from '../components/PropertySidebar.vue';
 import SearchBar from '../components/SearchBar.vue';
 
+declare const __: any;
+
 const props = defineProps<{
     canLogin?: boolean;
     canRegister?: boolean;
@@ -18,7 +20,8 @@ console.log(props.ipLocation)
 const mapRef = ref<InstanceType<typeof MapboxMap> | null>(null);
 const isAuthModalOpen = ref(false);
 const showMobileMap = ref(true);
-const isLoading = ref(true);
+const isInitialLoading = ref(true);
+const isMapUpdating = ref(false);
 const userLocation = ref({ lat: props.ipLocation.lat, lng: props.ipLocation.lng });
 
 const requestUserLocation = () => {
@@ -35,8 +38,6 @@ const requestUserLocation = () => {
                 lng: position.coords.longitude
             };
             finalizeLoading(userLocation.value.lat, userLocation.value.lng);
-            
-            fetchPropertiesByLocation(userLocation.value.lat, userLocation.value.lng);
         },
         (error) => {
             console.warn('Permiso denegado o error. Usando IP fallback.', error);
@@ -47,24 +48,31 @@ const requestUserLocation = () => {
 };
 
 const finalizeLoading = (lat: number, lng: number) => {
-    isLoading.value = false;
+    isInitialLoading.value = false;
     if (mapRef.value) {
         // Volvemos a enviar los números separados
         mapRef.value.flyTo(lng, lat, 13); 
     }
 };
 
-// 4. Buscar propiedades cuando cambian las coordenadas (Ej: Al buscar un texto o mover el mapa)
-const fetchPropertiesByLocation = (lat: number, lng: number) => {
-    isLoading.value = true;
+// 4. Buscar propiedades por límites geográficos automáticamente
+const fetchPropertiesByBounds = (bounds: any) => {
+    isMapUpdating.value = true;
     
-    // Usamos partial reload de Inertia para no recargar toda la página
-    router.get('/', { lat, lng }, {
+    // Usamos partial reload de Inertia para pedir sólo la caja actual
+    router.get('/', { 
+        sw_lng: bounds.sw_lng, 
+        sw_lat: bounds.sw_lat, 
+        ne_lng: bounds.ne_lng, 
+        ne_lat: bounds.ne_lat,
+        lat: bounds.center_lat,
+        lng: bounds.center_lng // opcional para tener un punto central
+    }, {
         preserveState: true,
         preserveScroll: true,
         only: ['initialProperties'],
         onFinish: () => {
-            isLoading.value = false;
+            isMapUpdating.value = false;
         }
     });
 };
@@ -88,19 +96,26 @@ onMounted(() => {
 
     <div class="relative w-screen h-screen overflow-hidden bg-gray-50 dark:bg-zinc-950 font-['Inter',sans-serif]">
         
-        <div v-if="isLoading" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm transition-opacity duration-300">
+        <!-- Pantalla de carga inicial (bloqueante, sólo ocurre 1 vez) -->
+        <div v-if="isInitialLoading" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm transition-opacity duration-300">
             <div class="w-12 h-12 border-4 border-[#008f39]/30 border-t-[#008f39] rounded-full animate-spin"></div>
-            <p class="mt-4 font-medium text-gray-700 dark:text-gray-300 animate-pulse">Ubicando las mejores propiedades...</p>
+            <p class="mt-4 font-medium text-gray-700 dark:text-gray-300 animate-pulse">{{ __('Locating best properties...') }}</p>
+        </div>
+        
+        <!-- Indicador sutil de carga al moverse por el mapa (Cero bloqueante) -->
+        <div v-show="isMapUpdating && !isInitialLoading" class="absolute top-24 left-1/2 -translate-x-1/2 z-40 bg-white/90 dark:bg-zinc-800/90 shadow-lg px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-300 pointer-events-none transition-opacity duration-200">
+            <div class="w-3 h-3 border-2 border-[#008f39]/30 border-t-[#008f39] rounded-full animate-spin"></div>
+            {{ __('Refreshing map...') }}
         </div>
 
         <div :class="['absolute inset-0', showMobileMap ? 'block' : 'hidden md:block']">
-            <MapboxMap ref="mapRef" :markers="initialProperties" />
+            <MapboxMap ref="mapRef" :markers="initialProperties" @bounds-change="fetchPropertiesByBounds" />
         </div>
 
         <div :class="['transition-opacity duration-300', showMobileMap ? 'opacity-100 z-10' : 'opacity-0 -z-10 md:opacity-100 md:z-10']">
             <SearchBar 
                 @open-auth="isAuthModalOpen = true" 
-                @location-searched="(coords) => fetchPropertiesByLocation(coords.lat, coords.lng)" 
+                @location-searched="(coords: any) => { if(mapRef) mapRef.flyTo(coords.lng, coords.lat, 14) }" 
             />
         </div>
 

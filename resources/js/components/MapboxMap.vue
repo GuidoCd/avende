@@ -33,7 +33,8 @@ const props = withDefaults(defineProps<{
 
 // 3. Tipado de Emits
 const emit = defineEmits<{
-  (e: 'marker-click', property: PropertyMarker): void
+  (e: 'marker-click', property: PropertyMarker): void,
+  (e: 'bounds-change', bounds: { sw_lng: number, sw_lat: number, ne_lng: number, ne_lat: number, center_lng: number, center_lat: number }): void
 }>();
 
 // 4. Tipado de variables reactivas y referencias
@@ -60,6 +61,22 @@ onMounted(() => {
 
     map.on('load', () => {
       updateMarkers();
+    });
+
+    map.on('moveend', () => {
+      if (!map) return;
+      const bounds = map.getBounds();
+      const center = map.getCenter();
+      if (!bounds) return;
+      
+      emit('bounds-change', {
+        sw_lng: bounds.getWest(),
+        sw_lat: bounds.getSouth(),
+        ne_lng: bounds.getEast(),
+        ne_lat: bounds.getNorth(),
+        center_lng: center.lng,
+        center_lat: center.lat
+      });
     });
   }
 
