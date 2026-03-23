@@ -33,7 +33,7 @@ class HomeController extends Controller
         // Usamos select() para no traer datos pesados como descripciones largas si no se necesitan en el mapa
         $query = Property::query()
                             ->with('media')
-                            ->select('id', 'title', 'address', 'price', 'type', 'bathrooms', 'rooms',
+                            ->select('id', 'title', 'address', 'price', 'bathrooms', 'rooms',
         //'has_360', 'beds'
         'latitude', 'longitude')
             ->where('is_active', 1); // Asumiendo que tienes un estado
@@ -63,7 +63,6 @@ class HomeController extends Controller
                 'address' => $property->address,
                 'price' => $property->price,
                 // Si el Enum se serializa raro, puedes enviar el ->value
-                'type' => $property->type, 
                 'bathrooms' => $property->bathrooms,
                 'rooms' => $property->rooms,
                 // Mapeamos para que el frontend reciba 'lat' y 'lng' como espera tu componente

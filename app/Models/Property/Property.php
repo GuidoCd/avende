@@ -10,8 +10,6 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
-use App\Enums\Property\PropertyType;
-use App\Enums\Property\PropertyStatus;
 use App\Models\User;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -34,20 +32,34 @@ class Property extends Model implements HasMedia
         'title',
         'slug',
         'description',
-        'type',
-        'status',
+        'property_type_id',
+        'property_status_id',
+        'publishing_status',
         'price',
         'currency',
+        'common_expenses',
+        'taxes',
+        'rental_period',
         'address',
+        'street_number',
         'city',
         'neighborhood',
+        'zip_code',
+        'state',
+        'country',
         'latitude',
         'longitude',
         'surface_total',
         'surface_covered',
         'rooms',
         'bathrooms',
+        'half_bathrooms',
         'garage',
+        'year_built',
+        'floor_number',
+        'total_floors',
+        'video_url',
+        'virtual_tour_url',
         'is_active',
         'is_featured',
         'is_verified_property',
@@ -57,16 +69,20 @@ class Property extends Model implements HasMedia
     protected function casts(): array
     {
         return [
-            'type' => PropertyType::class,
-            'status' => PropertyStatus::class,
             'price' => 'integer',
+            'common_expenses' => 'integer',
+            'taxes' => 'integer',
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
             'surface_total' => 'integer',
             'surface_covered' => 'integer',
             'rooms' => 'integer',
             'bathrooms' => 'integer',
+            'half_bathrooms' => 'integer',
             'garage' => 'integer',
+            'year_built' => 'integer',
+            'floor_number' => 'integer',
+            'total_floors' => 'integer',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'is_verified_property' => 'boolean',
@@ -76,7 +92,7 @@ class Property extends Model implements HasMedia
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['status', 'price', 'is_active'])
+            ->logOnly(['publishing_status', 'price', 'is_active'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
@@ -85,10 +101,25 @@ class Property extends Model implements HasMedia
     {
         return $this->belongsTo(User::class);
     }
+    
+    public function propertyType(): BelongsTo
+    {
+        return $this->belongsTo(PropertyType::class);
+    }
+    
+    public function propertyStatus(): BelongsTo
+    {
+        return $this->belongsTo(PropertyStatus::class);
+    }
 
     public function favoritedBy(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+    }
+    
+    public function features(): BelongsToMany
+    {
+        return $this->belongsToMany(Feature::class);
     }
 
     public function scopeInBounds($query, $swLat, $swLng, $neLat, $neLng)
