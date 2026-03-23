@@ -36,23 +36,21 @@ class HomeController extends Controller
                             ->select('id', 'title', 'address', 'price', 'bathrooms', 'rooms',
         //'has_360', 'beds'
         'latitude', 'longitude')
-            ->where('is_active', 1); // Asumiendo que tienes un estado
+            ->where('is_active', 1)
+            ->where('publishing_status', 'published'); // Make sure we only show published!
 
-        // Si el frontend envía coordenadas (por ejemplo, al mover el mapa o buscar), filtramos por radio
-        if ($request->has(['lat', 'lng'])) {
-            $lat = (float) $request->lat;
-            $lng = (float) $request->lng;
-            $radius = $request->input('radius', 10); // 10 km por defecto
+        // Bounding box filter para el mapa (Máxima performance usando índices de BD)
+        if ($request->has(['sw_lat', 'sw_lng', 'ne_lat', 'ne_lng'])) {
+            $sw_lat = (float) $request->sw_lat;
+            $sw_lng = (float) $request->sw_lng;
+            $ne_lat = (float) $request->ne_lat;
+            $ne_lng = (float) $request->ne_lng;
 
-            // Fórmula Haversine en SQL para buscar por distancia (Performance)
-            $query->selectRaw(
-                '( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance',
-                [$lat, $lng, $lat]
-            )
-            ->having('distance', '<', $radius)
-            ->orderBy('distance');
+            $query->whereBetween('latitude', [$sw_lat, $ne_lat])
+                  ->whereBetween('longitude', [$sw_lng, $ne_lng])
+                  ->limit(200); // Límite razonable para no saturar el mapa
         } else {
-            // Si no hay coordenadas, traemos las últimas cerca de la ubicación por defecto
+            // Si no hay coordenadas (carga inicial bruta), traemos las últimas
             $query->orderBy('created_at', 'desc')->limit(50);
         }
 
@@ -80,7 +78,7 @@ class HomeController extends Controller
                 'lng' => $defaultLng
             ],
             // Pasamos los filtros actuales para mantener el estado
-            'filters' => $request->only(['lat', 'lng', 'search'])
+            'filters' => $request->only(['sw_lat', 'ne_lat', 'sw_lng', 'ne_lng', 'lat', 'lng', 'search'])
         ]);
     }
 }
