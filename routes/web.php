@@ -27,7 +27,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Publisher\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/properties', [\App\Http\Controllers\Publisher\PropertyController::class, 'index'])->name('properties.index');
         Route::get('/properties/create', [\App\Http\Controllers\Publisher\PropertyController::class, 'create'])->name('properties.create');
-        Route::post('/properties', [\App\Http\Controllers\Publisher\PropertyController::class, 'store'])->name('properties.store');
+        Route::get('/properties/{property:uuid}/build', [\App\Http\Controllers\Publisher\PropertyController::class, 'edit'])->name('properties.edit');
+        Route::put('/properties/{property:uuid}', [\App\Http\Controllers\Publisher\PropertyController::class, 'update'])->name('properties.update');
     });
 });
 
