@@ -51,7 +51,7 @@ const finalizeLoading = (lat: number, lng: number) => {
     isInitialLoading.value = false;
     if (mapRef.value) {
         // Volvemos a enviar los números separados
-        mapRef.value.flyTo(lng, lat, 13); 
+        mapRef.value.flyTo(lng, lat, 13, false); 
     }
 };
 
@@ -79,7 +79,7 @@ const fetchPropertiesByBounds = (bounds: any) => {
 
 const handlePropertySelect = (property: any) => {
     if (mapRef.value) {
-        mapRef.value.flyTo(property.lng, property.lat, 16);
+        mapRef.value.flyTo(property.lng, property.lat, 16, true);
     }
 };
 
@@ -115,7 +115,7 @@ onMounted(() => {
         <div :class="['transition-opacity duration-300', showMobileMap ? 'opacity-100 z-10' : 'opacity-0 -z-10 md:opacity-100 md:z-10']">
             <SearchBar 
                 @open-auth="isAuthModalOpen = true" 
-                @location-searched="(coords: any) => { if(mapRef) mapRef.flyTo(coords.lng, coords.lat, 14) }" 
+                @location-searched="(coords: any) => { if(mapRef) mapRef.flyTo(coords.lng, coords.lat, 14, false) }" 
             />
         </div>
 

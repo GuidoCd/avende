@@ -22,7 +22,8 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('home'));
+            $default = url()->previous() === route('home') ? route('profile.show') : url()->previous();
+            return redirect()->intended($default);
         }
 
         return back()->withErrors([

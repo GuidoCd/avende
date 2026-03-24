@@ -105,14 +105,14 @@ onMounted(() => {
 });
 
 // 5. SOLUCIÓN AL ERROR NaN: Convertimos a Float y validamos
-const flyTo = (lng: number | string, lat: number | string, zoom: number = 15) => {
+const flyTo = (lng: number | string, lat: number | string, zoom: number = 15, isProgrammatic: boolean = true) => {
   if (!map) return;
   
   const parsedLng = typeof lng === 'string' ? parseFloat(lng) : lng;
   const parsedLat = typeof lat === 'string' ? parseFloat(lat) : lat;
 
   if (!isNaN(parsedLng) && !isNaN(parsedLat)) {
-    isProgrammaticMove = true;
+    isProgrammaticMove = isProgrammatic;
     map.flyTo({
       center: [parsedLng, parsedLat],
       zoom: zoom,
