@@ -42,6 +42,7 @@ const mapContainer = ref<HTMLElement | null>(null);
 let map: mapboxgl.Map | null = null;
 const markerInstances = shallowRef<mapboxgl.Marker[]>([]);
 let themeObserver: MutationObserver | null = null;
+let isProgrammaticMove = false;
 
 onMounted(() => {
   mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN || '';
@@ -65,6 +66,14 @@ onMounted(() => {
 
     map.on('moveend', () => {
       if (!map) return;
+      
+      // Si el movimiento fue causado por un flyTo() programático (click en marker o sidebar), 
+      // ignoramos este evento para no recargar las propiedades y destrozar el Popup abierto.
+      if (isProgrammaticMove) {
+          isProgrammaticMove = false;
+          return;
+      }
+
       const bounds = map.getBounds();
       const center = map.getCenter();
       if (!bounds) return;
@@ -103,6 +112,7 @@ const flyTo = (lng: number | string, lat: number | string, zoom: number = 15) =>
   const parsedLat = typeof lat === 'string' ? parseFloat(lat) : lat;
 
   if (!isNaN(parsedLng) && !isNaN(parsedLat)) {
+    isProgrammaticMove = true;
     map.flyTo({
       center: [parsedLng, parsedLat],
       zoom: zoom,

@@ -1,9 +1,9 @@
 <template>
-  <div class="absolute top-6 left-1/2 -translate-x-1/2 z-10 w-[92%] sm:w-[90%] md:w-[700px] lg:w-[850px] transition-all duration-300">
-    <div class="bg-white/80 backdrop-blur-md dark:bg-zinc-900/80 border border-white/20 dark:border-zinc-800/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full p-2 flex items-center justify-between transition-all duration-300">
+  <div :class="['absolute left-1/2 -translate-x-1/2 z-10 transition-all duration-300 ease-in-out', isFocused ? 'top-8 w-[96%] sm:w-[85%] md:w-[600px] lg:w-[700px]' : 'top-6 w-[92%] sm:w-[90%] md:w-[700px] lg:w-[850px]']">
+    <div :class="['backdrop-blur-md rounded-full p-2 flex items-center justify-between transition-all duration-300 ease-in-out', isFocused ? 'bg-white shadow-[0_12px_40px_rgba(0,143,57,0.25)] ring-2 ring-[#008f39] dark:bg-zinc-900 dark:ring-emerald-500' : 'bg-white/80 dark:bg-zinc-900/80 border border-white/20 dark:border-zinc-800/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)]']">
       
       <!-- Brand / Logo -->
-      <div class="px-4 border-r border-gray-200 dark:border-zinc-700 hidden sm:flex items-center gap-2">
+      <div v-show="!isFocused" class="px-4 border-r border-gray-200 dark:border-zinc-700 hidden sm:flex items-center gap-2 transition-opacity">
         <div class="bg-emerald-500 text-white p-1 rounded-md">
            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
         </div>
@@ -17,15 +17,17 @@
         </button>
         <input 
           v-model="searchQuery"
+          @focus="isFocused = true"
+          @blur="handleBlur"
           @keyup.enter="handleSearch"
           type="text" 
           :placeholder="__('Search Location...')" 
-          class="bg-transparent border-none outline-none focus:ring-0 w-full text-gray-900 dark:text-white placeholder-gray-400 flex-1 min-w-0"
+          :class="['bg-transparent border-none outline-none focus:ring-0 w-full text-gray-900 dark:text-white placeholder-gray-400 flex-1 min-w-0 transition-all font-medium', isFocused ? 'text-lg md:text-xl px-2 py-1' : 'text-base']"
         />
       </div>
 
       <!-- Controls / Actions -->
-      <div class="flex items-center gap-1 sm:gap-1.5 pr-1 shrink-0">
+      <div v-show="!isFocused" class="flex items-center gap-1 sm:gap-1.5 pr-1 shrink-0 transition-opacity">
         <!-- Filter Toggle -->
         <div class="relative">
           <button @click="isFiltersOpen = !isFiltersOpen" class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-emerald-50 text-emerald-700 dark:hover:bg-zinc-800 transition-colors text-sm font-medium dark:text-gray-200 whitespace-nowrap bg-emerald-100 dark:bg-emerald-900/30">
@@ -167,16 +169,26 @@
 import { Link, usePage, router } from '@inertiajs/vue3';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 
+declare const __: any;
+
 const emit = defineEmits(['open-auth', 'search', 'location-searched']);
 
 const page = usePage();
 const currentLocale = computed(() => page.props.locale || 'es');
-const searchQuery = ref(page.props.filters?.search || '');
+const searchQuery = ref((page.props.filters as Record<string, any> | undefined)?.search || '');
 
 const isFiltersOpen = ref(false);
 const isUserMenuOpen = ref(false);
 const isLangMenuOpen = ref(false);
 const isDark = ref(false);
+const isFocused = ref(false);
+
+const handleBlur = () => {
+  // Retrasamos el blur por si se hizo click en el botón de búsqueda y para suavizar
+  setTimeout(() => {
+    isFocused.value = false;
+  }, 200);
+};
 
 const changeLanguage = (lang: string) => {
   isLangMenuOpen.value = false;
@@ -188,6 +200,7 @@ const changeLanguage = (lang: string) => {
 
 const handleSearch = async () => {
   if (!searchQuery.value) return;
+  isFocused.value = false;
   try {
     const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
     const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery.value)}.json?access_token=${mapboxToken}`);
@@ -206,7 +219,7 @@ const closeDropdowns = (e: MouseEvent) => {
   if (isUserMenuOpen.value && !target.closest('.relative')) {
     isUserMenuOpen.value = false;
   }
-  if (isLangMenuOpen.value && !e.target.closest('.relative')) {
+  if (isLangMenuOpen.value && !target.closest('.relative')) {
     isLangMenuOpen.value = false;
   }
 };
