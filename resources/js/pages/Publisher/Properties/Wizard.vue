@@ -31,6 +31,7 @@ const props = defineProps<{
     propertyTypes: PropertyType[];
     propertyStatuses: PropertyStatus[];
     features: Record<string, Feature[]>;
+    currencies: { code: string; name: string; symbol: string }[];
 }>();
 
 const steps = [
@@ -247,6 +248,10 @@ const setMainImage = (uuid: string, isNew: boolean = false) => {
     }
 };
 
+const getCurrencySymbol = (code: string) => {
+    const c = props.currencies.find(x => x.code === code);
+    return c ? c.symbol : '$';
+};
 
 const currentStep = computed(() => steps[currentStepIndex.value]);
 const progressPercentage = computed(() => ((currentStepIndex.value + 1) / steps.length) * 100);
@@ -257,6 +262,8 @@ const canGoNext = computed(() => {
             return form.property_type_id !== null && form.property_status_id !== null && form.title.trim() !== '';
         case 'location':
             return form.address.trim() !== '' && form.city.trim() !== '';
+        case 'images':
+            return existingImages.value.length > 0 || form.images.length > 0;
         case 'pricing':
             return form.price !== null && form.price > 0;
         default:
@@ -296,6 +303,24 @@ const goBack = () => {
     } else {
         router.visit('/publisher/properties');
     }
+};
+
+const saveAndExit = () => {
+    isSaving.value = true;
+    form.transform((data) => ({
+        ...data,
+        _method: 'put',
+    })).post(`/publisher/properties/${props.property.uuid}`, {
+        forceFormData: true,
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: () => {
+             router.visit('/publisher/properties');
+        },
+        onFinish: () => {
+            isSaving.value = false;
+        }
+    });
 };
 
 const publish = () => {
@@ -393,7 +418,7 @@ const changeLocale = (locale: string) => {
 
                 <div class="w-px h-6 bg-gray-200 dark:bg-zinc-700 mx-1"></div>
 
-                <button @click="goBack" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white font-medium transition-colors text-sm sm:text-base">
+                <button @click="saveAndExit" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white font-medium transition-colors text-sm sm:text-base">
                     {{ __('Save & Exit') }}
                 </button>
             </div>
@@ -627,10 +652,17 @@ const changeLocale = (locale: string) => {
                         
                         <div class="max-w-md space-y-8 bg-white dark:bg-zinc-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-700 transition-colors">
                             <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">{{ __('Currency') }}</label>
+                                <select v-model="form.currency" class="w-full px-4 py-4 text-lg border rounded-xl focus:ring-2 focus:ring-[#008f39] focus:border-[#008f39] bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white transition-colors mb-4">
+                                    <option v-for="c in currencies" :key="c.code" :value="c.code">{{ c.code }} - {{ c.name }}</option>
+                                </select>
+                            </div>
+
+                            <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">{{ __('Price') }}</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <span class="text-gray-500 text-xl font-medium">$</span>
+                                        <span class="text-gray-500 text-xl font-medium">{{ getCurrencySymbol(form.currency) }}</span>
                                     </div>
                                     <input v-model="form.price" type="number" 
                                         class="w-full pl-10 pr-4 py-4 text-3xl font-bold border rounded-xl focus:ring-2 focus:ring-[#008f39] focus:border-[#008f39] bg-transparent border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white transition-colors" 
@@ -642,7 +674,7 @@ const changeLocale = (locale: string) => {
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Common Expenses (Optional)') }}</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <span class="text-gray-500 text-md">$</span>
+                                        <span class="text-gray-500 text-md">{{ getCurrencySymbol(form.currency) }}</span>
                                     </div>
                                     <input v-model="form.common_expenses" type="number" 
                                         class="w-full pl-10 pr-4 py-3 text-lg border rounded-xl focus:ring-2 focus:ring-[#008f39] focus:border-[#008f39] bg-transparent border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white transition-colors" 

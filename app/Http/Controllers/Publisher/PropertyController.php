@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Publisher;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PropertyUpdateRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Property\Property;
@@ -93,21 +94,27 @@ class PropertyController extends Controller
             ]);
         });
 
+        $currencies = \App\Models\Currency::where('is_active', true)->get()->map(fn($c) => [
+            'code' => $c->code,
+            'name' => $c->name,
+            'symbol' => $c->symbol,
+        ]);
+
         return Inertia::render('Publisher/Properties/Wizard', [
             'property' => $property,
             'propertyTypes' => $propertyTypes,
             'propertyStatuses' => $propertyStatuses,
             'features' => $features,
+            'currencies' => $currencies,
         ]);
     }
 
     /**
      * Update the drafted property during the multi-step flow.
      */
-    public function update(Request $request, Property $property)
+    public function update(PropertyUpdateRequest $request, Property $property)
     {
-        // Simple update approach accepting any property attributes configured in fillable.
-        // In a real application, you'd use a FormRequest with sometimes|required validation.
+        $validated = $request->validated();
         
         // Handle price if present
         if ($request->has('price') && $request->filled('price')) {
@@ -149,6 +156,21 @@ class PropertyController extends Controller
                          ->toMediaCollection('images');
             }
         }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Toggle the active status of the property (Publish/Unpublish outside the wizard).
+     */
+    public function toggleActive(PropertyUpdateRequest $request, Property $property)
+    {
+        if ($property->publishing_status === 'draft') {
+            return response()->json(['message' => __('Cannot publish a draft property.')], 422);
+        }
+        
+        $property->is_active = $request->input('is_active', !$property->is_active);
+        $property->save();
 
         return redirect()->back();
     }

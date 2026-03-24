@@ -11,14 +11,16 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use App\Models\Property\Property;
 use App\Models\Property\Favorite;
 use App\Models\Property\ZoneAlert;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasRoles, TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, HasRoles, TwoFactorAuthenticatable, InteractsWithMedia;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +29,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'nickname',
         'email',
         'password',
         'avatar',
@@ -72,8 +75,20 @@ class User extends Authenticatable
         return $this->belongsToMany(Property::class, 'favorites')->withTimestamps();
     }
 
-    public function zoneAlerts(): HasMany
+    public function publicProfile(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasMany(ZoneAlert::class);
+        return $this->hasOne(UserPublicProfile::class);
+    }
+
+    public function contactHistory(): HasMany
+    {
+        return $this->hasMany(UserContactHistory::class);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatar')
+            ->singleFile()
+            ->useDisk('public');
     }
 }

@@ -92,12 +92,12 @@
           
           <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-700 p-6 flex flex-col items-center text-center">
             <div class="relative mb-4">
-              <div class="w-24 h-24 rounded-full bg-linear-to-br from-[#008f39] to-emerald-300 flex items-center justify-center text-white text-3xl font-bold uppercase shadow-lg border-4 border-white dark:border-zinc-800">
+              <div v-if="$page.props.auth.avatar_url" class="w-24 h-24 rounded-full border-4 border-white dark:border-zinc-800 shadow-lg overflow-hidden flex items-center justify-center bg-gray-100 dark:bg-zinc-800">
+                <img :src="$page.props.auth.avatar_url" class="w-full h-full object-cover">
+              </div>
+              <div v-else class="w-24 h-24 rounded-full bg-linear-to-br from-[#008f39] to-emerald-300 flex items-center justify-center text-white text-3xl font-bold uppercase shadow-lg border-4 border-white dark:border-zinc-800">
                 {{ $page.props.auth.user.name.charAt(0) }}
               </div>
-              <button class="absolute bottom-0 right-0 bg-white dark:bg-zinc-700 text-gray-600 dark:text-gray-300 p-1.5 rounded-full shadow border border-gray-200 dark:border-zinc-600 hover:text-[#008f39] transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-              </button>
             </div>
             
             <h2 class="text-xl font-bold">{{ $page.props.auth.user.name }}</h2>
@@ -132,6 +132,11 @@
                <Link href="/publisher/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm" :class="$page.url.startsWith('/publisher/dashboard') ? 'bg-emerald-50 text-[#008f39] dark:bg-emerald-900/20 dark:text-emerald-400' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-700/50'">
                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                  {{ __('Dashboard') }}
+               </Link>
+
+               <Link href="/publisher/profile" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm" :class="$page.url.startsWith('/publisher/profile') ? 'bg-emerald-50 text-[#008f39] dark:bg-emerald-900/20 dark:text-emerald-400' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-700/50'">
+                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                 {{ __('Public Profile') }}
                </Link>
 
                <Link href="/publisher/properties" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm" :class="$page.url.startsWith('/publisher/properties') && ! $page.url.includes('/create') ? 'bg-emerald-50 text-[#008f39] dark:bg-emerald-900/20 dark:text-emerald-400' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-700/50'">
@@ -210,6 +215,10 @@
             <Link @click="isMobileMenuOpen = false" href="/publisher/dashboard" class="flex items-center gap-4 p-4 rounded-2xl shadow-sm border transition-colors" :class="$page.url.startsWith('/publisher/dashboard') ? 'bg-emerald-50 border-emerald-100 text-[#008f39] dark:bg-emerald-900/20 dark:border-emerald-800/30 dark:text-emerald-400' : 'bg-white border-gray-100 text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700'">
               <div class="p-2 bg-white dark:bg-zinc-700 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg></div>
               <span class="font-bold text-lg">{{ __('Dashboard') }}</span>
+            </Link>
+            <Link @click="isMobileMenuOpen = false" href="/publisher/profile" class="flex items-center gap-4 p-4 rounded-2xl shadow-sm border transition-colors" :class="$page.url.startsWith('/publisher/profile') ? 'bg-emerald-50 border-emerald-100 text-[#008f39] dark:bg-emerald-900/20 dark:border-emerald-800/30 dark:text-emerald-400' : 'bg-white border-gray-100 text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700'">
+              <div class="p-2 bg-white dark:bg-zinc-700 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
+              <span class="font-bold text-lg">{{ __('Public Profile') }}</span>
             </Link>
             <Link @click="isMobileMenuOpen = false" href="/publisher/properties" class="flex items-center gap-4 p-4 rounded-2xl shadow-sm border transition-colors" :class="$page.url.startsWith('/publisher/properties') && ! $page.url.includes('/create') ? 'bg-emerald-50 border-emerald-100 text-[#008f39] dark:bg-emerald-900/20 dark:border-emerald-800/30 dark:text-emerald-400' : 'bg-white border-gray-100 text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700'">
               <div class="p-2 bg-white dark:bg-zinc-700 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>

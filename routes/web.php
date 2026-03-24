@@ -18,6 +18,7 @@ Route::post('/language', [\App\Http\Controllers\LocaleController::class, 'update
 Route::middleware(['auth'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
     Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('profile', [ProfileController::class, 'update'])->name('profile.update'); // Using POST instead of PUT because forms with Files require POST in Laravel unless spoofed.
     Route::get('profile/favorites', [\App\Http\Controllers\Profile\FavoriteController::class, 'index'])->name('profile.favorites');
     Route::get('profile/security', [\App\Http\Controllers\Profile\SecurityController::class, 'show'])->name('profile.security');
     Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
@@ -25,10 +26,16 @@ Route::middleware(['auth'])->group(function () {
     // Publisher Routes (Add publisher role middleware here later if needed)
     Route::prefix('publisher')->name('publisher.')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Publisher\DashboardController::class, 'index'])->name('dashboard');
+        
+        // Publisher Profile
+        Route::get('/profile', [\App\Http\Controllers\Publisher\PublisherProfileController::class, 'show'])->name('profile.show');
+        Route::post('/profile', [\App\Http\Controllers\Publisher\PublisherProfileController::class, 'update'])->name('profile.update');
+
         Route::get('/properties', [\App\Http\Controllers\Publisher\PropertyController::class, 'index'])->name('properties.index');
         Route::get('/properties/create', [\App\Http\Controllers\Publisher\PropertyController::class, 'create'])->name('properties.create');
         Route::get('/properties/{property:uuid}/build', [\App\Http\Controllers\Publisher\PropertyController::class, 'edit'])->name('properties.edit');
         Route::put('/properties/{property:uuid}', [\App\Http\Controllers\Publisher\PropertyController::class, 'update'])->name('properties.update');
+        Route::patch('/properties/{property:uuid}/toggle', [\App\Http\Controllers\Publisher\PropertyController::class, 'toggleActive'])->name('properties.toggle');
     });
 });
 
