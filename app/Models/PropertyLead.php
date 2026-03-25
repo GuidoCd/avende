@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\Property\Property;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class PropertyLead extends Model
+{
+    protected $fillable = [
+        'property_id',
+        'user_id',
+        'name',
+        'email',
+        'phone',
+        'message',
+        'status',
+    ];
+
+    public function property(): BelongsTo
+    {
+        return $this->belongsTo(Property::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+}

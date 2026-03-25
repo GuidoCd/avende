@@ -155,9 +155,10 @@
         <div class="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent">
           <span class="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0 w-14">{{ __('Price') }}</span>
           <button class="px-4 py-1.5 rounded-full text-sm font-medium bg-[#00a8cc] text-white shrink-0">{{ __('Any price') }}</button>
-          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">&lt; $15k/mes</button>
-          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">$15k–$40k/mes</button>
-          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">&gt; $40k/mes</button>
+          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">&lt; $15k/{{ __('mes') }}</button>
+          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">$15k–$40k/{{ __('mes') }}</button>
+          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">&gt; $40k/{{ __('mes') }}</button>
+          <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">{{ __('Sale') }}</button>
           <button class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 shrink-0">{{ __('Sale') }}</button>
         </div>
       </div>

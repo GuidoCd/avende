@@ -7,7 +7,15 @@
 <script setup lang="ts">
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { ref, onMounted, onUnmounted, watch, shallowRef } from 'vue';
+import { ref, onMounted, onUnmounted, watch, shallowRef, getCurrentInstance } from 'vue';
+
+const instance = getCurrentInstance();
+const trans = (key: string) => {
+  if (instance && instance.appContext.config.globalProperties.__) {
+    return instance.appContext.config.globalProperties.__(key);
+  }
+  return typeof (window as any).__ === 'function' ? (window as any).__(key) : key;
+};
 
 // 1. Definimos la interfaz para que TS conozca la estructura de las propiedades
 interface PropertyMarker {
@@ -147,7 +155,7 @@ const updateMarkers = () => {
     el.className = 'custom-marker group relative flex flex-col items-center justify-center cursor-pointer';
     el.innerHTML = `
       <div class="relative z-10 bg-[#00a676] hover:bg-[#008f65] transition-all transform group-hover:scale-105 duration-300 text-white font-bold px-3 py-1.5 rounded-full shadow-[0_4px_12px_rgba(0,166,118,0.5)] border-2 border-white/20 text-xs whitespace-nowrap">
-        $${property.price}/m
+        $${property.price}${property.isForRent ? `/${trans('mes')}` : ''}
       </div>
       <div class="absolute -bottom-2 w-3 h-3 bg-[#00a676] transform rotate-45 group-hover:bg-[#008f65] transition-colors z-0"></div>
       <div class="absolute -bottom-4 w-6 h-6 bg-[#00a676]/20 rounded-full blur-sm scale-y-50 z-[-1]"></div>
@@ -168,7 +176,7 @@ const updateMarkers = () => {
             Destacado
           </div>
           <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-8">
-            <div class="font-bold text-xl text-white outline-none" style="-webkit-text-stroke: 0.5px black;">$${property.price || 0}<span class="text-sm font-normal">/mes</span></div>
+            <div class="font-bold text-xl text-white outline-none" style="-webkit-text-stroke: 0.5px black;">$${property.price || 0}<span class="text-sm font-normal">${property.isForRent ? `/${trans('mes')}` : ''}</span></div>
           </div>
         </div>
         <div class="p-3">
@@ -181,9 +189,9 @@ const updateMarkers = () => {
           </div>
           
           <div class="flex items-center gap-2">
-            <button class="flex-1 py-1.5 px-2 bg-[#008f39] text-white rounded-full text-xs font-bold hover:bg-emerald-700 transition shadow-sm flex items-center justify-center gap-1">
-              <span>Ver</span>
-            </button>
+            <a href="/properties/${property.slug || '#'}" class="flex-1 py-1.5 px-2 bg-[#008f39] text-white rounded-full text-xs font-bold hover:bg-emerald-700 transition shadow-sm flex items-center justify-center gap-1">
+              <span>Ver Propiedad</span>
+            </a>
           </div>
         </div>
     `;

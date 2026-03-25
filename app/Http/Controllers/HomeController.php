@@ -32,10 +32,10 @@ class HomeController extends Controller
         // 4. Consulta optimizada de propiedades
         // Usamos select() para no traer datos pesados como descripciones largas si no se necesitan en el mapa
         $query = Property::query()
-                            ->with('media')
-                            ->select('id', 'title', 'address', 'price', 'bathrooms', 'rooms',
+                            ->with(['media', 'propertyStatus'])
+                            ->select('id', 'title', 'slug', 'address', 'price', 'bathrooms', 'rooms',
         //'has_360', 'beds'
-        'latitude', 'longitude')
+        'latitude', 'longitude', 'property_status_id')
             ->where('is_active', 1)
             ->where('publishing_status', 'published'); // Make sure we only show published!
 
@@ -58,8 +58,10 @@ class HomeController extends Controller
             return [
                 'id' => $property->id,
                 'title' => $property->title,
+                'slug' => $property->slug,
                 'address' => $property->address,
                 'price' => $property->price,
+                'isForRent' => $property->propertyStatus?->slug === 'rent',
                 // Si el Enum se serializa raro, puedes enviar el ->value
                 'bathrooms' => $property->bathrooms,
                 'rooms' => $property->rooms,

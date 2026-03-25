@@ -139,6 +139,11 @@
                  {{ __('Public Profile') }}
                </Link>
 
+               <Link href="/publisher/leads" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm" :class="$page.url.startsWith('/publisher/leads') ? 'bg-emerald-50 text-[#008f39] dark:bg-emerald-900/20 dark:text-emerald-400' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-700/50'">
+                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                 {{ __('Leads & Contactos') }}
+               </Link>
+
                <Link href="/publisher/properties" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm" :class="$page.url.startsWith('/publisher/properties') && ! $page.url.includes('/create') ? 'bg-emerald-50 text-[#008f39] dark:bg-emerald-900/20 dark:text-emerald-400' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-700/50'">
                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                  {{ __('My Properties') }}
@@ -220,6 +225,11 @@
               <div class="p-2 bg-white dark:bg-zinc-700 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
               <span class="font-bold text-lg">{{ __('Public Profile') }}</span>
             </Link>
+            
+            <Link @click="isMobileMenuOpen = false" href="/publisher/leads" class="flex items-center gap-4 p-4 rounded-2xl shadow-sm border transition-colors" :class="$page.url.startsWith('/publisher/leads') ? 'bg-emerald-50 border-emerald-100 text-[#008f39] dark:bg-emerald-900/20 dark:border-emerald-800/30 dark:text-emerald-400' : 'bg-white border-gray-100 text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700'">
+              <div class="p-2 bg-white dark:bg-zinc-700 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>
+              <span class="font-bold text-lg">{{ __('Leads & Contactos') }}</span>
+            </Link>
             <Link @click="isMobileMenuOpen = false" href="/publisher/properties" class="flex items-center gap-4 p-4 rounded-2xl shadow-sm border transition-colors" :class="$page.url.startsWith('/publisher/properties') && ! $page.url.includes('/create') ? 'bg-emerald-50 border-emerald-100 text-[#008f39] dark:bg-emerald-900/20 dark:border-emerald-800/30 dark:text-emerald-400' : 'bg-white border-gray-100 text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700'">
               <div class="p-2 bg-white dark:bg-zinc-700 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
               <span class="font-bold text-lg">{{ __('My Properties') }}</span>
@@ -245,6 +255,8 @@
 <script setup lang="ts">
 import { Link, usePage, router } from '@inertiajs/vue3';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
+
+declare const __: any;
 
 const page = usePage();
 const currentLocale = computed(() => page.props.locale || 'es');

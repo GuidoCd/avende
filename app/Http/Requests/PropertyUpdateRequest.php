@@ -25,9 +25,11 @@ class PropertyUpdateRequest extends FormRequest
     {
         return [
             'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
             'property_type_id' => 'nullable|exists:property_types,id',
             'property_status_id' => 'nullable|exists:property_statuses,id',
             'address' => 'nullable|string|max:255',
+            'neighborhood' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
             'state' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:255',
@@ -40,6 +42,8 @@ class PropertyUpdateRequest extends FormRequest
             'bathrooms' => 'nullable|integer|min:0',
             'half_bathrooms' => 'nullable|integer|min:0',
             'garage' => 'nullable|integer|min:0',
+            'floor_number' => 'nullable|integer',
+            'total_floors' => 'nullable|integer|min:1',
             'year_built' => 'nullable|integer',
             'price' => 'nullable|numeric|min:0',
             'currency' => 'nullable|string|exists:currencies,code',

@@ -39,6 +39,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('home', absolute: false));
+        $default = url()->previous() === route('home') ? route('profile.show') : url()->previous();
+        return redirect()->intended($default);
     }
 }

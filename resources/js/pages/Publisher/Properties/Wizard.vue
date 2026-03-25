@@ -11,6 +11,7 @@ declare const __: any;
 interface PropertyType {
     id: number;
     name: string;
+    slug: string;
     icon: string | null;
 }
 
@@ -64,10 +65,14 @@ const form = useForm({
     bathrooms: props.property.bathrooms || null,
     half_bathrooms: props.property.half_bathrooms || null,
     garage: props.property.garage || null,
+    floor_number: props.property.floor_number || null,
+    total_floors: props.property.total_floors || null,
     year_built: props.property.year_built || null,
     features: props.property.features?.map((f: any) => f.id) || [],
     price: props.property.price ? props.property.price / 100 : null,
     currency: props.property.currency || 'USD',
+    description: props.property.description || '',
+    neighborhood: props.property.neighborhood || '',
     common_expenses: props.property.common_expenses || null,
     publishing_status: props.property.publishing_status || 'draft',
     images: [] as File[], // for new uploads
@@ -173,6 +178,11 @@ const searchLocationText = async () => {
         console.error('Forward Geocoding failed', e);
     }
 };
+
+const selectedTypeSlug = computed(() => {
+    const type = props.propertyTypes.find(t => t.id === form.property_type_id);
+    return type ? type.slug : '';
+});
 
 watch(currentStepIndex, async (newVal) => {
     if (steps[newVal].id === 'location') {
@@ -444,6 +454,12 @@ const changeLocale = (locale: string) => {
                                 class="w-full text-lg p-4 border rounded-xl shadow-sm focus:ring-2 focus:ring-[#008f39] focus:border-[#008f39] transition-all bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500" />
                         </div>
 
+                        <div class="space-y-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Description') }}</label>
+                            <textarea v-model="form.description" rows="4" :placeholder="__('Describe the best features of your property...')"
+                                class="w-full text-md p-4 border rounded-xl shadow-sm focus:ring-2 focus:ring-[#008f39] focus:border-[#008f39] transition-all bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"></textarea>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
                             <div class="space-y-4">
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Property Type') }}</label>
@@ -508,6 +524,10 @@ const changeLocale = (locale: string) => {
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Country') }}</label>
                                         <input v-model="form.country" type="text" class="w-full p-3 border rounded-lg focus:ring-[#008f39] focus:border-[#008f39] bg-transparent border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white" />
                                     </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('Neighborhood') }}</label>
+                                        <input v-model="form.neighborhood" type="text" placeholder="e.g. Centro Histórico" class="w-full p-3 border rounded-lg focus:ring-[#008f39] focus:border-[#008f39] bg-transparent border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white" />
+                                    </div>
                                 </div>
                                 <div class="mt-6 pt-6 border-t border-gray-100 dark:border-zinc-700 flex items-center justify-between">
                                     <p class="text-xs text-gray-400 dark:text-zinc-500 max-w-[60%]">{{ __('Move the marker on the map to automatically fill these details, or click search.') }}</p>
@@ -554,6 +574,34 @@ const changeLocale = (locale: string) => {
                             <div class="flex items-center justify-between py-4 border-b border-gray-100 dark:border-zinc-700">
                                 <span class="text-lg text-gray-800 dark:text-gray-200">{{ __('Total Surface (m²)') }}</span>
                                 <input v-model="form.surface_total" type="number" class="w-24 p-2 text-center border rounded-lg focus:ring-[#008f39] focus:border-[#008f39] bg-transparent border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white" />
+                            </div>
+                            <div class="flex items-center justify-between py-4 border-b border-gray-100 dark:border-zinc-700">
+                                <span class="text-lg text-gray-800 dark:text-gray-200">{{ __('Covered Surface (m²)') }}</span>
+                                <input v-model="form.surface_covered" type="number" class="w-24 p-2 text-center border rounded-lg focus:ring-[#008f39] focus:border-[#008f39] bg-transparent border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white" />
+                            </div>
+                            <div class="flex items-center justify-between py-4 border-b border-gray-100 dark:border-zinc-700">
+                                <span class="text-lg text-gray-800 dark:text-gray-200">{{ __('Half Bathrooms') }}</span>
+                                <div class="flex items-center gap-4">
+                                    <button @click="form.half_bathrooms = Math.max(0, (form.half_bathrooms || 0) - 1)" class="w-10 h-10 rounded-full border border-gray-200 dark:border-zinc-600 flex items-center justify-center hover:border-[#008f39] dark:hover:border-[#008f39] text-gray-900 dark:text-white transition-colors">-</button>
+                                    <span class="w-6 text-center text-lg text-gray-900 dark:text-white">{{ form.half_bathrooms || 0 }}</span>
+                                    <button @click="form.half_bathrooms = (form.half_bathrooms || 0) + 1" class="w-10 h-10 rounded-full border border-gray-200 dark:border-zinc-600 flex items-center justify-center hover:border-[#008f39] dark:hover:border-[#008f39] text-gray-900 dark:text-white transition-colors">+</button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between py-4 border-b border-gray-100 dark:border-zinc-700">
+                                <span class="text-lg text-gray-800 dark:text-gray-200">{{ __('Garage (Optional)') }}</span>
+                                <div class="flex items-center gap-4">
+                                    <button @click="form.garage = Math.max(0, (form.garage || 0) - 1)" class="w-10 h-10 rounded-full border border-gray-200 dark:border-zinc-600 flex items-center justify-center hover:border-[#008f39] dark:hover:border-[#008f39] text-gray-900 dark:text-white transition-colors">-</button>
+                                    <span class="w-6 text-center text-lg text-gray-900 dark:text-white">{{ form.garage || 0 }}</span>
+                                    <button @click="form.garage = (form.garage || 0) + 1" class="w-10 h-10 rounded-full border border-gray-200 dark:border-zinc-600 flex items-center justify-center hover:border-[#008f39] dark:hover:border-[#008f39] text-gray-900 dark:text-white transition-colors">+</button>
+                                </div>
+                            </div>
+                            <div v-if="selectedTypeSlug === 'apartment'" class="flex items-center justify-between py-4 border-b border-gray-100 dark:border-zinc-700">
+                                <span class="text-lg text-gray-800 dark:text-gray-200">{{ __('Floor Number') }}</span>
+                                <input v-model="form.floor_number" type="number" class="w-24 p-2 text-center border rounded-lg focus:ring-[#008f39] focus:border-[#008f39] bg-transparent border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white" />
+                            </div>
+                            <div v-else-if="selectedTypeSlug === 'house'" class="flex items-center justify-between py-4 border-b border-gray-100 dark:border-zinc-700">
+                                <span class="text-lg text-gray-800 dark:text-gray-200">{{ __('Total Floors') }}</span>
+                                <input v-model="form.total_floors" type="number" class="w-24 p-2 text-center border rounded-lg focus:ring-[#008f39] focus:border-[#008f39] bg-transparent border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white" />
                             </div>
                         </div>
                     </div>

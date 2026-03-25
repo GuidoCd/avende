@@ -3,7 +3,7 @@
     <div class="relative rounded-xl overflow-hidden aspect-4/3 mb-3 bg-gray-100 dark:bg-zinc-900">
       <img :src="property.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'" alt="Property thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
       <div class="absolute top-2 left-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold text-gray-900 dark:text-white shadow-sm">
-        {{ property.type === 'rent' ? __('For Rent') : __('For Sale') }}
+        {{ property.isForRent ? __('For Rent') : __('For Sale') }}
       </div>
       <!-- 360 View Button Placeholder -->
       <button v-if="property.has360" class="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 backdrop-blur-sm text-white p-2 rounded-full transition-colors flex items-center justify-center">
@@ -13,7 +13,7 @@
     
     <div>
       <div class="font-bold text-lg text-emerald-600 dark:text-emerald-400 mb-1">
-        ${{ property.price ? (property.price).toLocaleString() : '0' }}<span v-if="property.type === 'rent'" class="text-sm font-normal text-gray-500">/mes</span>
+        ${{ property.price ? (property.price).toLocaleString() : '0' }}<span v-if="property.isForRent" class="text-sm font-normal text-gray-500">/{{ __('mes') }}</span>
       </div>
       <h3 class="font-semibold text-gray-900 dark:text-white truncate mb-1" :title="property.title">{{ property.title }}</h3>
       <p class="text-xs text-gray-500 dark:text-gray-400 truncate flex items-center gap-1 mb-3">
@@ -35,11 +35,22 @@
           {{ property.sqm }} m²
         </div>
       </div>
+      
+      <!-- Action buttons -->
+      <div class="mt-3 flex gap-2">
+        <Link :href="property.slug ? `/properties/${property.slug}` : '#'" @click.stop class="flex-1 py-1.5 px-2 bg-[#008f39] text-white rounded-full text-xs font-bold hover:bg-emerald-700 transition shadow-sm flex items-center justify-center gap-1">
+          <span>Ver Propiedad</span>
+        </Link>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
+
+declare const __: any;
+
 defineProps({
   property: {
     type: Object,
