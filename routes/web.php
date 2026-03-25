@@ -19,6 +19,7 @@ Route::middleware('guest')->group(function () {
 Route::post('/language', [\App\Http\Controllers\LocaleController::class, 'update'])->name('locale.update');
 
 Route::middleware(['auth'])->group(function () {
+    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
     Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::post('profile', [ProfileController::class, 'update'])->name('profile.update'); // Using POST instead of PUT because forms with Files require POST in Laravel unless spoofed.
     Route::get('profile/favorites', [\App\Http\Controllers\Profile\FavoriteController::class, 'index'])->name('profile.favorites');
