@@ -137,7 +137,6 @@ class Property extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images')
-            ->useDisk('public')
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
     }
 
@@ -146,11 +145,17 @@ class Property extends Model implements HasMedia
         $this->addMediaConversion('thumb')
             ->width(400)
             ->height(300)
-            ->sharpen(10);
+            ->sharpen(10)
+            ->format('webp')
+            ->optimize()
+            ->queued();
 
         $this->addMediaConversion('optimized')
             ->width(1200)
             ->height(900)
-            ->withResponsiveImages();
+            ->format('webp')
+            ->optimize()
+            ->withResponsiveImages()
+            ->queued();
     }
 }

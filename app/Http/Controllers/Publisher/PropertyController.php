@@ -7,6 +7,9 @@ use App\Http\Requests\PropertyUpdateRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Property\Property;
+use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class PropertyController extends Controller
 {
@@ -123,7 +126,7 @@ class PropertyController extends Controller
             $request->request->remove('price');
         }
 
-        $property->update($request->all());
+        $property->update($validated);
 
         if ($request->has('features')) {
             $property->features()->sync($request->features);
@@ -148,10 +151,21 @@ class PropertyController extends Controller
             if (!is_array($files)) {
                 $files = [$files];
             }
+
+            $manager = new ImageManager(new Driver());
+
             foreach ($files as $file) {
                 // Determine if it's the first image to automatically make it main
                 $isFirst = $property->getMedia('images')->count() === 0;
-                $property->addMedia($file)
+
+                $image = $manager->read($file);
+
+                $encoded = $image->scaleDown(width: 1920)->toWebp(quality: 80);
+
+                $filename = Str::slug($property->title) . '-' . uniqid() . '.webp';
+
+                $property->addMediaFromString($encoded->toString())
+                         ->usingFileName($filename) // Le decimos cómo debe llamarse
                          ->withCustomProperties(['main' => $isFirst])
                          ->toMediaCollection('images');
             }
