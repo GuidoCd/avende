@@ -22,6 +22,12 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        if(app()->isProduction() && !in_array($request->email, ['gmauriciocd@gmail.com', 'lucy@gmail.com', 'ana@gmail.com'])) {
+            return back()->withErrors([
+                'email' => __('auth.failed'),
+            ])->onlyInput('email');
+        }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
