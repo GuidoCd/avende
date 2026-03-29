@@ -10,7 +10,6 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "ext-redis": "*",
         "inertiajs/inertia-laravel": "^2.0",
         "intervention/image": "^3.11",
         "laravel/fortify": "^1.30",
@@ -19,6 +18,7 @@
         "laravel/socialite": "^5.25",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
+        "predis/predis": "^3.4",
         "spatie/laravel-activitylog": "^4.12",
         "spatie/laravel-medialibrary": "^11.21",
         "spatie/laravel-permission": "^6.24",
