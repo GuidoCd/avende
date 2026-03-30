@@ -22,6 +22,10 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
+            if (Auth::user()->hasRole('admin') || Auth::user()->hasRole('support')) {
+                return redirect()->intended(route('admin.dashboard'));
+            }
+
             $default = url()->previous() === route('home') ? route('profile.show') : url()->previous();
             return redirect()->intended($default);
         }
@@ -36,11 +40,13 @@ class LoginController extends Controller
      */
     public function destroy(Request $request)
     {
+        $redirectTo = str_contains(url()->previous(), '/admin-portal') ? route('admin.login') : '/';
+
         Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect($redirectTo);
     }
 }

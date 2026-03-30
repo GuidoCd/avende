@@ -12,6 +12,7 @@ interface PropertyAgent {
   whatsapp: string;
   email: string;
   avatar?: string;
+  is_verified?: boolean;
 }
 
 declare const __: any;
@@ -75,7 +76,10 @@ const getDefaultAvatar = () => 'https://ui-avatars.com/api/?name=Agente&backgrou
             <img :src="agent.avatar || getDefaultAvatar()" :alt="agent.name" class="w-full h-full object-cover" />
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-bold text-gray-900 dark:text-white truncate">{{ agent.name }}</p>
+            <p class="text-sm font-bold text-gray-900 dark:text-white truncate flex items-center gap-1.5">
+                {{ agent.name }}
+                <svg v-if="agent.is_verified" class="w-4 h-4 text-[#008f39]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">{{ agent.title }} &middot; {{ agent.agency }}</p>
           </div>
         </div>

@@ -17,8 +17,7 @@
           </div>
 
           <div class="flex items-center gap-1 sm:gap-2">
-
-            <div v-if="isPublisher" class="hidden md:flex items-center bg-gray-100 dark:bg-zinc-900 p-1 rounded-full border border-gray-200 dark:border-zinc-700 mx-2">
+            <div class="hidden md:flex items-center bg-gray-100 dark:bg-zinc-900 p-1 rounded-full border border-gray-200 dark:border-zinc-700 mx-2">
               <button 
                 @click="toggleProfileMode('visitor')" 
                 :class="activeProfileMode === 'visitor' ? 'bg-white dark:bg-zinc-700 shadow-sm text-[#008f39] dark:text-emerald-400' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'" 
@@ -90,7 +89,7 @@
         
         <div class="md:col-span-1 space-y-6">
           
-          <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-700 p-6 flex flex-col items-center text-center">
+          <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-700 p-6 flex-col items-center text-center" :class="$page.url === '/profile' ? 'flex' : 'hidden md:flex'">
             <div class="relative mb-4">
               <div v-if="$page.props.auth.avatar_url" class="w-24 h-24 rounded-full border-4 border-white dark:border-zinc-800 shadow-lg overflow-hidden flex items-center justify-center bg-gray-100 dark:bg-zinc-800">
                 <img :src="$page.props.auth.avatar_url" class="w-full h-full object-cover">
@@ -103,18 +102,27 @@
             <h2 class="text-xl font-bold">{{ $page.props.auth.user.name }}</h2>
             <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">{{ $page.props.auth.user.email }}</p>
             
-            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+            <span v-if="$page.props.auth.user.is_verified" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              {{ __('Active Account') }}
+              {{ __('Verificado') }}
+            </span>
+            <span v-else class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 dark:bg-zinc-700 dark:text-gray-300">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+              {{ __('No Verificado') }}
             </span>
           </div>
 
           <nav class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-700 p-2 hidden md:block">
             
             <div v-show="activeProfileMode === 'visitor'" class="space-y-1">
+              <span class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-2 block">{{ __('My Account') }}</span>
               <Link href="/profile" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm" :class="$page.url === '/profile' ? 'bg-emerald-50 text-[#008f39] dark:bg-emerald-900/20 dark:text-emerald-400' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-700/50'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                 {{ __('My Account') }}
+              </Link>
+              <Link href="/profile/identity-verification" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm" :class="$page.url.startsWith('/profile/identity-verification') ? 'bg-emerald-50 text-[#008f39] dark:bg-emerald-900/20 dark:text-emerald-400' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-700/50'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                {{ __('Validación de identidad') }}
               </Link>
               <Link href="/profile/favorites" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm" :class="$page.url.startsWith('/profile/favorites') ? 'bg-emerald-50 text-[#008f39] dark:bg-emerald-900/20 dark:text-emerald-400' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-700/50'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
@@ -180,9 +188,9 @@
           </button>
         </div>
 
-        <div class="flex-1 overflow-y-auto px-6 py-8 flex flex-col gap-8 bg-gray-50/50 dark:bg-zinc-900/50">
-          
-          <div v-if="isPublisher" class="bg-gray-100 dark:bg-zinc-800 p-1.5 rounded-2xl flex items-center justify-between shadow-inner shrink-0">
+        <div class="flex-1 overflow-y-auto px-6 py-8 flex flex-col gap-6 bg-gray-50/50 dark:bg-zinc-900/50">
+
+          <div class="bg-gray-100 dark:bg-zinc-800 p-1.5 rounded-2xl flex items-center justify-between shadow-inner shrink-0">
               <button 
                 @click="toggleProfileMode('visitor', true)" 
                 :class="activeProfileMode === 'visitor' ? 'bg-white dark:bg-zinc-700 shadow-sm text-[#008f39] dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'" 
@@ -199,11 +207,15 @@
               </button>
           </div>
 
-          <nav v-if="activeProfileMode === 'visitor'" class="flex flex-col gap-3 shrink-0">
-            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 px-2">{{ __('Visitor Options') }}</span>
+          <nav v-show="activeProfileMode === 'visitor'" class="flex flex-col gap-3 shrink-0">
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 px-2">{{ __('My Account') }}</span>
             <Link @click="isMobileMenuOpen = false" href="/profile" class="flex items-center gap-4 p-4 rounded-2xl shadow-sm border transition-colors" :class="$page.url === '/profile' ? 'bg-emerald-50 border-emerald-100 text-[#008f39] dark:bg-emerald-900/20 dark:border-emerald-800/30 dark:text-emerald-400' : 'bg-white border-gray-100 text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700'">
               <div class="p-2 bg-white dark:bg-zinc-700 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
               <span class="font-bold text-lg">{{ __('My Account') }}</span>
+            </Link>
+            <Link @click="isMobileMenuOpen = false" href="/profile/identity-verification" class="flex items-center gap-4 p-4 rounded-2xl shadow-sm border transition-colors" :class="$page.url.startsWith('/profile/identity-verification') ? 'bg-emerald-50 border-emerald-100 text-[#008f39] dark:bg-emerald-900/20 dark:border-emerald-800/30 dark:text-emerald-400' : 'bg-white border-gray-100 text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700'">
+              <div class="p-2 bg-white dark:bg-zinc-700 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
+              <span class="font-bold text-lg">{{ __('Validación de identidad') }}</span>
             </Link>
             <Link @click="isMobileMenuOpen = false" href="/profile/favorites" class="flex items-center gap-4 p-4 rounded-2xl shadow-sm border transition-colors" :class="$page.url.startsWith('/profile/favorites') ? 'bg-emerald-50 border-emerald-100 text-[#008f39] dark:bg-emerald-900/20 dark:border-emerald-800/30 dark:text-emerald-400' : 'bg-white border-gray-100 text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700'">
               <div class="p-2 bg-white dark:bg-zinc-700 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg></div>
@@ -215,7 +227,7 @@
             </Link>
           </nav>
 
-          <nav v-if="activeProfileMode === 'publisher'" class="flex flex-col gap-3 shrink-0">
+          <nav v-show="activeProfileMode === 'publisher'" class="flex flex-col gap-3 shrink-0">
             <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 px-2">{{ __('Publisher Hub') }}</span>
             <Link @click="isMobileMenuOpen = false" href="/publisher/dashboard" class="flex items-center gap-4 p-4 rounded-2xl shadow-sm border transition-colors" :class="$page.url.startsWith('/publisher/dashboard') ? 'bg-emerald-50 border-emerald-100 text-[#008f39] dark:bg-emerald-900/20 dark:border-emerald-800/30 dark:text-emerald-400' : 'bg-white border-gray-100 text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700'">
               <div class="p-2 bg-white dark:bg-zinc-700 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg></div>
@@ -265,22 +277,16 @@ const isLangMenuOpen = ref(false);
 const isDark = ref(false);
 
 // Role Switcher State
-const isPublisher = true; 
-// Determine initial mode based on current URL
 const initialMode = page.url.startsWith('/publisher') ? 'publisher' : 'visitor';
 const activeProfileMode = ref<string>(initialMode);
 const isMobileMenuOpen = ref(false);
 
 const toggleProfileMode = (mode: string, isFromMobile: boolean = false) => {
-  
   activeProfileMode.value = mode;
-  
   if (!isFromMobile) {
     isMobileMenuOpen.value = false;
   }
-
   const destinationUrl = mode === 'publisher' ? '/publisher/dashboard' : '/profile';
-
   router.visit(destinationUrl, {
     preserveState: true,
     preserveScroll: true

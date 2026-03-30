@@ -54,9 +54,9 @@
            <div class="bg-rose-50 dark:bg-rose-900/30 p-2 rounded-lg">
              <svg class="w-6 h-6 text-rose-500 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
            </div>
-           <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Total Saves') }}</span>
+           <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Total Leads') }}</span>
          </div>
-         <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ stats.total_favorites }}</p>
+         <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ stats.total_leads }}</p>
       </div>
 
     </div>
@@ -93,9 +93,11 @@
   </div>
 </template>
 
-<script setup>
-import ProfileLayout from '@/Layouts/ProfileLayout.vue';
+<script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import ProfileLayout from '@/Layouts/ProfileLayout.vue';
+
+declare const __: any;
 
 
 defineOptions({ layout: ProfileLayout });

@@ -45,6 +45,18 @@ class PropertyController extends Controller
                 'whatsapp' => $profile->whatsapp ?? $profile->phone ?? $publisher->phone,
                 'email' => $profile->email ?? $publisher->email,
                 'avatar' => $profile->avatar_url ?? null, // Will use placeholder in frontend if null
+                'is_verified' => (bool) $publisher->is_verified,
+            ];
+        } elseif ($publisher) {
+            $agent = [
+                'name' => $publisher->name,
+                'title' => 'Agente Inmobiliario',
+                'agency' => 'Independiente',
+                'phone' => $publisher->phone,
+                'whatsapp' => $publisher->phone,
+                'email' => $publisher->email,
+                'avatar' => $publisher->getFirstMediaUrl('avatar') ?: null,
+                'is_verified' => (bool) $publisher->is_verified,
             ];
         }
 

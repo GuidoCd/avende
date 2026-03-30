@@ -13,18 +13,24 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        // Placeholder data for publisher's dashboard analytics
+        $userId = $request->user()->id;
+
+        // Base query for properties belonging to the publisher
+        $baseQuery = \App\Models\Property\Property::where('user_id', $userId);
+        
         $stats = [
-            'total_properties' => 12,
-            'active_properties' => 9,
-            'total_visits' => 12450,
-            'total_favorites' => 342,
+            'total_properties' => (clone $baseQuery)->count(),
+            'active_properties' => (clone $baseQuery)->where('is_active', true)->where('publishing_status', 'published')->count(),
+            'total_visits' => (clone $baseQuery)->sum('views_count') ?? 0,
+            'total_leads' => \App\Models\PropertyLead::whereHas('property', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })->count(),
         ];
 
-        // Fake data for a 7-day visits chart
+        // Fake data for a 7-day visits chart (Needs tracking table to be real)
         $visitsChart = [
             'labels' => ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-            'data' => [120, 200, 150, 80, 250, 400, 310]
+            'data' => [0, 0, 0, 0, 0, 0, 0]
         ];
 
         return Inertia::render('Publisher/Dashboard', [
