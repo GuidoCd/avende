@@ -337,9 +337,6 @@ const publish = () => {
     form.publishing_status = 'published';
     isSaving.value = true;
     form.put(`/publisher/properties/${props.property.uuid}`, {
-        onSuccess: () => {
-            router.visit('/publisher/properties');
-        },
         onFinish: () => {
             isSaving.value = false;
         }

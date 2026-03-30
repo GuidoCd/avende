@@ -68,6 +68,8 @@
                            </label>
                            <span v-else class="text-xs text-amber-600 dark:text-amber-400 font-bold tracking-wide">{{ __('DRAFT') }}</span>
 
+                          <Link v-if="property.publishing_status !== 'draft'" :href="`/properties/${property.slug}`" class="text-[#008f39] hover:underline font-medium text-xs">{{ __('View') }}</Link>
+
                           <Link :href="`/publisher/properties/${property.uuid}/build`" class="bg-gray-100 hover:bg-gray-200 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-gray-900 dark:text-white px-3 py-1.5 rounded-lg font-medium text-xs transition-colors">{{ __('Edit') }}</Link>
                        </div>
                    </div>

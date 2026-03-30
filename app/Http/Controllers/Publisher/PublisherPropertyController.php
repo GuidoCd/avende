@@ -8,10 +8,10 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Property\Property;
 use Illuminate\Support\Str;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Facades\Storage;
+use App\Jobs\ProcessPropertyImage;
 
-class PropertyController extends Controller
+class PublisherPropertyController extends Controller
 {
     /**
      * Display a listing of the properties owned by the publisher.
@@ -24,6 +24,7 @@ class PropertyController extends Controller
             ->through(fn($property) => [
                 'id' => $property->id,
                 'uuid' => $property->uuid,
+                'slug' => $property->slug,
                 'title' => $property->title,
                 'address' => $property->address,
                 'price' => $property->price,
@@ -152,23 +153,19 @@ class PropertyController extends Controller
                 $files = [$files];
             }
 
-            $manager = new ImageManager(new Driver());
-
             foreach ($files as $file) {
                 // Determine if it's the first image to automatically make it main
                 $isFirst = $property->getMedia('images')->count() === 0;
 
-                $image = $manager->read($file);
+                // Store temporarily on local disk to be processed by the job
+                $path = $file->store('tmp/property-images', 'local');
 
-                $encoded = $image->scaleDown(width: 1920)->toWebp(quality: 80);
-
-                $filename = Str::slug($property->title) . '-' . uniqid() . '.webp';
-
-                $property->addMediaFromString($encoded->toString())
-                         ->usingFileName($filename) // Le decimos cómo debe llamarse
-                         ->withCustomProperties(['main' => $isFirst])
-                         ->toMediaCollection('images');
+                ProcessPropertyImage::dispatch($property, Storage::disk('local')->path($path), $isFirst);
             }
+        }
+
+        if ($request->input('publishing_status') === 'published') {
+            return redirect()->route('property.show', $property->slug);
         }
 
         return redirect()->back();

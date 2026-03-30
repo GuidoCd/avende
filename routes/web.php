@@ -36,11 +36,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/profile', [\App\Http\Controllers\Publisher\PublisherProfileController::class, 'show'])->name('profile.show');
         Route::post('/profile', [\App\Http\Controllers\Publisher\PublisherProfileController::class, 'update'])->name('profile.update');
 
-        Route::get('/properties', [\App\Http\Controllers\Publisher\PropertyController::class, 'index'])->name('properties.index');
-        Route::get('/properties/create', [\App\Http\Controllers\Publisher\PropertyController::class, 'create'])->name('properties.create');
-        Route::get('/properties/{property:uuid}/build', [\App\Http\Controllers\Publisher\PropertyController::class, 'edit'])->name('properties.edit');
-        Route::put('/properties/{property:uuid}', [\App\Http\Controllers\Publisher\PropertyController::class, 'update'])->name('properties.update');
-        Route::patch('/properties/{property:uuid}/toggle', [\App\Http\Controllers\Publisher\PropertyController::class, 'toggleActive'])->name('properties.toggle');
+        Route::get('/properties', [\App\Http\Controllers\Publisher\PublisherPropertyController::class, 'index'])->name('properties.index');
+        Route::get('/properties/create', [\App\Http\Controllers\Publisher\PublisherPropertyController::class, 'create'])->name('properties.create');
+        Route::get('/properties/{property:uuid}/build', [\App\Http\Controllers\Publisher\PublisherPropertyController::class, 'edit'])->name('properties.edit');
+        Route::put('/properties/{property:uuid}', [\App\Http\Controllers\Publisher\PublisherPropertyController::class, 'update'])->name('properties.update');
+        Route::patch('/properties/{property:uuid}/toggle', [\App\Http\Controllers\Publisher\PublisherPropertyController::class, 'toggleActive'])->name('properties.toggle');
     });
 });
 
