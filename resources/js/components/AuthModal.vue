@@ -162,12 +162,22 @@ const props = defineProps({
   isOpen: {
     type: Boolean,
     default: false
+  },
+  initialTab: {
+    type: String,
+    default: 'login'
   }
 });
 
 const emit = defineEmits(['close']);
 
-const activeTab = ref('login');
+const activeTab = ref(props.initialTab);
+
+watch(() => props.isOpen, (newVal) => {
+  if (newVal) {
+    activeTab.value = props.initialTab;
+  }
+});
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 

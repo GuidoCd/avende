@@ -28,6 +28,10 @@
 
       <!-- Controls / Actions -->
       <div v-show="!isFocused" class="flex items-center gap-1 sm:gap-1.5 pr-1 shrink-0 transition-opacity">
+        <!-- Nosotros Link -->
+        <Link href="/about" class="hidden sm:flex items-center gap-1 px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors text-sm font-medium text-gray-700 dark:text-gray-300">
+            {{ __('About') }}
+        </Link>
         <!-- Filter Toggle -->
         <div class="relative">
           <button @click="isFiltersOpen = !isFiltersOpen" class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-emerald-50 text-emerald-700 dark:hover:bg-zinc-800 transition-colors text-sm font-medium dark:text-gray-200 whitespace-nowrap bg-emerald-100 dark:bg-emerald-900/30">
@@ -207,7 +211,7 @@ const handleBlur = () => {
 
 const changeLanguage = (lang: string) => {
   isLangMenuOpen.value = false;
-  router.post('/language', { locale: lang }, {
+  router.post('/preferences', { locale: lang }, {
     preserveScroll: true,
     preserveState: false, // Force a hard refresh of Inertia state
   });

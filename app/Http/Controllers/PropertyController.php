@@ -28,8 +28,17 @@ class PropertyController extends Controller
             'user.publicProfile'
         ]);
 
-        // Track view
-        $property->increment('views_count');
+        // Track view using Cache to prevent duplicates
+        $user = $request->user();
+        if (!$user || $user->id !== $property->user_id) {
+            $identifier = $user ? "user_" . $user->id : "ip_" . md5($request->ip() . $request->userAgent());
+            $cacheKey = "property_view_{$property->id}_{$identifier}";
+            
+            if (!\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+                $property->increment('views_count');
+                \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(24));
+            }
+        }
 
         // Formatted agent data
         $publisher = $property->user;
@@ -102,18 +111,15 @@ class PropertyController extends Controller
     {
         $user = $request->user();
 
-        // Increment contact reveals
-        // $property->increment('contact_reveals_count'); // If such column exists
-
         // If the property has an owner, and the viewer isn't the owner, notify them
-        if ($property->user_id && (!$user || $user->id !== $property->user_id)) {
-            // Notify the publisher
-            // This is a placeholder for where the actual email/notification logic goes
-            // e.g. $property->user->notify(new PropertyPhoneRevealed($property, $user));
-            // "¡Buenas noticias! El usuario Juan Pérez (juan@email.com) acaba de ver el teléfono de tu propiedad en Cochabamba."
-            \Log::info("El usuario " . ($user->name ?? 'Invitado') . " (" . ($user->email ?? 'N/A') . ") acaba de ver el teléfono de tu propiedad en {$property->city}.", [
+        if (!$user || $user->id !== $property->user_id) {
+            
+            // Record the reveal for future analytics
+            \App\Models\PropertyContactReveal::create([
                 'property_id' => $property->id,
                 'user_id' => $user->id ?? null,
+                'ip_address' => $request->ip(),
+                'user_agent' => mb_substr($request->userAgent() ?? '', 0, 500),
             ]);
         }
 

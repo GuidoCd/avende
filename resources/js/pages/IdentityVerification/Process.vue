@@ -23,6 +23,18 @@
           {{ __('Motivo del rechazo:') }} {{ verification.rejected_reason }}
         </div>
         
+        <div v-if="(verification.status === 'pending' || verification.status === 'approved') && (verification.front_url || verification.selfie_url)" class="flex justify-center gap-4 mb-8">
+            <div v-if="verification.front_url" class="w-24 h-24 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900">
+                <img :src="verification.front_url" class="w-full h-full object-cover hover:scale-125 transition-transform duration-300">
+            </div>
+            <div v-if="verification.back_url" class="w-24 h-24 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900">
+                <img :src="verification.back_url" class="w-full h-full object-cover hover:scale-125 transition-transform duration-300">
+            </div>
+            <div v-if="verification.selfie_url" class="w-24 h-24 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900">
+                <img :src="verification.selfie_url" class="w-full h-full object-cover hover:scale-125 transition-transform duration-300">
+            </div>
+        </div>
+        
         <button v-if="verification.status === 'rejected'" @click="resetForm" class="bg-[#008f39] hover:bg-emerald-600 text-white font-bold py-3 px-8 rounded-full transition-colors">
           {{ __('Volver a intentar') }}
         </button>
@@ -76,11 +88,11 @@
             </div>
             
             <div class="flex-1 relative bg-black rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center">
-                <video v-if="!cameraCapturedImage" ref="videoEl" class="w-full h-full object-cover" autoplay playsinline></video>
-                <img v-else :src="cameraCapturedImage" class="w-full h-full object-contain bg-black">
+                <video v-show="!cameraCapturedImage" ref="videoEl" class="w-full h-full object-cover" autoplay playsinline></video>
+                <img v-show="cameraCapturedImage" :src="cameraCapturedImage" class="w-full h-full object-contain bg-black">
                 
                 <!-- Camera Overlay Frame -->
-                <div v-if="!cameraCapturedImage" class="absolute inset-0 pointer-events-none border-4 border-zinc-700/50 m-6 rounded-xl box-border" :class="{'border-dashed border-white': isSelfieStage}"></div>
+                <div v-show="!cameraCapturedImage" class="absolute inset-0 pointer-events-none border-4 border-zinc-700/50 m-6 rounded-xl box-border" :class="{'border-dashed border-white': isSelfieStage}"></div>
                 
                 <!-- Loading State waiting for Camera -->
                 <div v-if="!cameraActive && !cameraCapturedImage && !cameraError" class="absolute inset-0 flex items-center justify-center bg-black/80 z-10">
@@ -232,14 +244,15 @@ const startCameraFlow = () => {
 
 const updateCameraInstructions = () => {
     const stage = requiredCaptureStages.value[currentCaptureStageIndex.value];
+    const docName = form.document_type === 'ci_dni' ? 'CI/DNI' : 'Pasaporte';
     if (stage === 'document_front') {
-        cameraInstructionTitle.value = 'Anverso del documento';
+        cameraInstructionTitle.value = `Anverso del documento (${docName})`;
         cameraInstructionDesc.value = 'Asegúrate de que haya buena iluminación y sin destellos';
     } else if (stage === 'document_back') {
-        cameraInstructionTitle.value = 'Reverso del documento';
+        cameraInstructionTitle.value = `Reverso del documento (${docName})`;
         cameraInstructionDesc.value = 'Asegúrate de que tus datos sean legibles';
     } else if (stage === 'selfie') {
-        cameraInstructionTitle.value = 'Toma de Rostro con Documento';
+        cameraInstructionTitle.value = `Toma de Rostro con Documento (${docName})`;
         cameraInstructionDesc.value = 'Sostén tu documento a la altura de tu rostro, cuidando que ambos sean claramente legibles y estén bien iluminados.';
     }
 };
@@ -395,7 +408,8 @@ const submitVerification = () => {
     form.post('/profile/identity-verification', {
         preserveScroll: true,
         onSuccess: () => {
-            // Props will refresh from controller
+            showFormOverride.value = false;
+            currentStep.value = 'intro';
         }
     });
 };

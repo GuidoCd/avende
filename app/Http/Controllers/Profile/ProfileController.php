@@ -19,7 +19,13 @@ class ProfileController extends Controller
         $user = $request->user();
         
         // Append avatar url so Vue can render it immediately without waiting for generic auth props
-        $avatarUrl = $user->getFirstMediaUrl('avatar');
+        $avatarUrl = null;
+        if ($user->avatar) {
+            $diskName = app()->environment('local', 'testing') ? 'public' : 'r2_public';
+            $avatarUrl = \Illuminate\Support\Facades\Storage::disk($diskName)->url($user->avatar);
+        } else {
+            $avatarUrl = $user->getFirstMediaUrl('avatar');
+        }
 
         return Inertia::render('Profile/Show', [
             'mustVerifyEmail' => $user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail,
@@ -69,7 +75,22 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('avatar')) {
-            $user->addMediaFromRequest('avatar')->toMediaCollection('avatar');
+            $file = $request->file('avatar');
+            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+            $image = $manager->read($file);
+            $encoded = $image->scaleDown(width: 800)->toWebp(quality: 80);
+            
+            $filename = 'users/' . $user->id . '/profile/avatar_' . uniqid() . '.webp';
+            $diskName = app()->environment('local', 'testing') ? 'public' : 'r2_public';
+            
+            \Illuminate\Support\Facades\Storage::disk($diskName)->put($filename, $encoded->toString());
+            
+            if ($user->avatar) {
+                \Illuminate\Support\Facades\Storage::disk($diskName)->delete($user->avatar);
+            }
+            
+            $user->avatar = $filename;
+            $user->save();
         }
 
         return Redirect::route('profile.show');

@@ -14,6 +14,24 @@ class IdentityVerificationController extends Controller
     {
         $verification = UserIdentityVerification::where('user_id', Auth::id())->latest()->first();
 
+        if ($verification && in_array($verification->status, ['pending', 'approved'])) {
+            $diskName = app()->environment('local', 'testing') ? 'public' : 'r2_private';
+            $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
+            
+            $getUrl = function($path) use ($disk, $diskName) {
+                if (!$path) return null;
+                // Exclude raw paths not yet processed by Background Job
+                if (!\Illuminate\Support\Str::startsWith($path, 'users/')) return null; 
+                return $diskName === 'public' 
+                    ? $disk->url($path) 
+                    : $disk->temporaryUrl($path, now()->addMinutes(30));
+            };
+
+            $verification->front_url = $getUrl($verification->document_front_path);
+            $verification->back_url = $getUrl($verification->document_back_path);
+            $verification->selfie_url = $getUrl($verification->selfie_path);
+        }
+
         return Inertia::render('IdentityVerification/Process', [
             'verification' => $verification
         ]);

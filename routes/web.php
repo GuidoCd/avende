@@ -11,6 +11,8 @@ Route::get('/properties/{property:slug}', [\App\Http\Controllers\PropertyControl
 Route::post('/api/properties/{property:uuid}/contact-views', [\App\Http\Controllers\PropertyController::class, 'recordContactView'])->name('property.contact-views');
 Route::post('/api/properties/{property:uuid}/leads', [\App\Http\Controllers\PropertyLeadController::class, 'store'])->name('property.leads.store');
 
+Route::inertia('/about', 'About')->name('about');
+
 Route::middleware('guest')->group(function () {
     Route::post('login', [LoginController::class, 'store'])->name('login.store');
     Route::post('register', [RegisteredUserController::class, 'store'])->name('register.store');
@@ -18,7 +20,7 @@ Route::middleware('guest')->group(function () {
     Route::post('admin-portal/login', [\App\Http\Controllers\Admin\Auth\AdminAuthController::class, 'store'])->name('admin.login.store');
 });
 
-Route::post('/language', [\App\Http\Controllers\LocaleController::class, 'update'])->name('locale.update');
+Route::post('/preferences', [\App\Http\Controllers\PreferencesController::class, 'update'])->name('preferences.update');
 
 Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:visitor'])->group(function () {

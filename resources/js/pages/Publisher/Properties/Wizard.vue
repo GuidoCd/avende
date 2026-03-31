@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
+import Compressor from 'compressorjs';
 import { Loader2, Plus, X, Star, UploadCloud } from 'lucide-vue-next';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -47,6 +48,7 @@ const steps = [
 
 const currentStepIndex = ref(0);
 const isSaving = ref(false);
+const isDragging = ref(false);
 
 const form = useForm({
     title: props.property.title || '',
@@ -231,13 +233,50 @@ const existingImages = computed(() => {
     return (props.property.images || []).filter((img: any) => !form.deleted_image_uuids.includes(img.uuid));
 });
 
-const handleImageUpload = (event: Event) => {
+const compressFile = (file: File) => {
+    return new Promise<File>((resolve, reject) => {
+        new Compressor(file, {
+            quality: 0.8,
+            maxWidth: 1600,
+            success(result) {
+                resolve(new File([result], file.name, { type: result.type }));
+            },
+            error(err) {
+                reject(err);
+            }
+        });
+    });
+};
+
+const handleImageUpload = async (event: Event) => {
     const input = event.target as HTMLInputElement;
     if (input.files) {
-        // Enforce appending new files to form.images
-        Array.from(input.files).forEach(file => {
-            form.images.push(file);
-        });
+        for (const file of Array.from(input.files)) {
+            try {
+                const optimizedFile = await compressFile(file);
+                form.images.push(optimizedFile);
+            } catch (err) {
+                console.error('Compression error:', err);
+                form.images.push(file);
+            }
+        }
+    }
+};
+
+const handleDrop = async (event: DragEvent) => {
+    isDragging.value = false;
+    if (event.dataTransfer?.files) {
+        for (const file of Array.from(event.dataTransfer.files)) {
+            if (file.type.startsWith('image/')) {
+                try {
+                    const optimizedFile = await compressFile(file);
+                    form.images.push(optimizedFile);
+                } catch (err) {
+                    console.error('Compression error:', err);
+                    form.images.push(file);
+                }
+            }
+        }
     }
 };
 
@@ -367,7 +406,7 @@ const changeLocale = (locale: string) => {
         preserveScroll: true,
         preserveState: true,
         onSuccess: () => {
-            router.post('/language', { locale: locale });
+            router.post('/preferences', { locale: locale });
         },
         onFinish: () => {
             isSaving.value = false;
@@ -635,7 +674,12 @@ const changeLocale = (locale: string) => {
                         </div>
 
                         <!-- Dropzone / Upload button -->
-                        <div class="bg-white dark:bg-zinc-800 p-8 rounded-2xl shadow-sm border-2 border-dashed border-gray-300 dark:border-zinc-600 flex flex-col items-center justify-center text-center transition-colors hover:border-[#008f39] dark:hover:border-[#008f39]">
+                        <div 
+                            @dragover.prevent="isDragging = true"
+                            @dragleave.prevent="isDragging = false"
+                            @drop.prevent="handleDrop"
+                            :class="isDragging ? 'border-[#008f39] bg-emerald-50 dark:bg-emerald-900/10' : 'border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-800'"
+                            class="p-8 rounded-2xl shadow-sm border-2 border-dashed flex flex-col items-center justify-center text-center transition-colors hover:border-[#008f39] dark:hover:border-[#008f39]">
                             <div class="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 text-[#008f39] rounded-full flex items-center justify-center mb-4">
                                 <UploadCloud class="w-8 h-8"/>
                             </div>

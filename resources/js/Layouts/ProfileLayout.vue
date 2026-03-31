@@ -295,7 +295,7 @@ const toggleProfileMode = (mode: string, isFromMobile: boolean = false) => {
 
 const changeLanguage = (lang: string) => {
   isLangMenuOpen.value = false;
-  router.post('/language', { locale: lang }, {
+  router.post('/preferences', { locale: lang }, {
     preserveScroll: true,
     preserveState: false, 
   });

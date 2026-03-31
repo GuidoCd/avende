@@ -19,6 +19,7 @@ const props = defineProps<{
 console.log(props.ipLocation)
 const mapRef = ref<InstanceType<typeof MapboxMap> | null>(null);
 const isAuthModalOpen = ref(false);
+const initialAuthTab = ref('login');
 const showMobileMap = ref(true);
 const isInitialLoading = ref(true);
 const isMapUpdating = ref(false);
@@ -86,6 +87,16 @@ const handlePropertySelect = (property: any) => {
 // Ejecutar al montar el componente
 onMounted(() => {
     requestUserLocation();
+
+    // Catch query parameters for opening auth modal from About Us
+    const urlParams = new URLSearchParams(window.location.search);
+    const authAction = urlParams.get('auth');
+    if (authAction === 'register' || authAction === 'login') {
+        initialAuthTab.value = authAction;
+        isAuthModalOpen.value = true;
+        // Clean URL to prevent re-opening modal on refresh
+        window.history.replaceState({}, '', window.location.pathname);
+    }
 });
 </script>
 
@@ -132,6 +143,6 @@ onMounted(() => {
             {{ showMobileMap ? 'Lista' : 'Mapa' }}
         </button>
         
-        <AuthModal :is-open="isAuthModalOpen" @close="isAuthModalOpen = false" />
+        <AuthModal :is-open="isAuthModalOpen" :initial-tab="initialAuthTab" @close="isAuthModalOpen = false" />
     </div>
 </template>

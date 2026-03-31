@@ -143,7 +143,10 @@ class PublisherPropertyController extends Controller
         }
 
         if ($request->has('deleted_image_uuids') && is_array($request->deleted_image_uuids)) {
-            $property->media()->whereIn('uuid', $request->deleted_image_uuids)->delete();
+            $mediaToDelete = $property->media()->whereIn('uuid', $request->deleted_image_uuids)->get();
+            foreach ($mediaToDelete as $media) {
+                $media->delete();
+            }
         }
 
         // Handle File Uploads if present

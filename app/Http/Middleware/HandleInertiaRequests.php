@@ -40,7 +40,16 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'auth' => [
                 'user' => $request->user(),
-                'avatar_url' => $request->user() ? $request->user()->getFirstMediaUrl('avatar') : null,
+                'preferences' => $request->user() ? $request->user()->preferences : null,
+                'avatar_url' => function () use ($request) {
+                    $user = $request->user();
+                    if (!$user) return null;
+                    if ($user->avatar) {
+                        $diskName = app()->environment('local', 'testing') ? 'public' : 'r2_public';
+                        return \Illuminate\Support\Facades\Storage::disk($diskName)->url($user->avatar);
+                    }
+                    return $user->getFirstMediaUrl('avatar') ?: null;
+                },
                 'roles' => $request->user() ? $request->user()->getRoleNames() : [],
                 'permissions' => $request->user() ? $request->user()->getAllPermissions()->pluck('name') : [],
             ],

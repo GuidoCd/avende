@@ -36,6 +36,7 @@ class User extends Authenticatable implements HasMedia
         'phone',
         'google_id',
         'is_verified',
+        'preferences',
     ];
 
     /**
@@ -62,6 +63,7 @@ class User extends Authenticatable implements HasMedia
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
             'is_verified' => 'boolean',
+            'preferences' => 'array',
         ];
     }
 

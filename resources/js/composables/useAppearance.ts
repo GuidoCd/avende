@@ -1,5 +1,6 @@
 import type { ComputedRef, Ref } from 'vue';
 import { computed, onMounted, ref } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import type { Appearance, ResolvedAppearance } from '@/types';
 
 export type { Appearance, ResolvedAppearance };
@@ -87,12 +88,26 @@ const appearance = ref<Appearance>('system');
 
 export function useAppearance(): UseAppearanceReturn {
     onMounted(() => {
-        const savedAppearance = localStorage.getItem(
-            'appearance',
-        ) as Appearance | null;
+        let savedAppearance = null;
+        
+        try {
+            const page = usePage() as any;
+            // Try to get theme from authenticated user's preferences first
+            if (page?.props?.auth?.user?.preferences?.theme) {
+                savedAppearance = page.props.auth.user.preferences.theme as Appearance;
+            }
+        } catch (e) {
+            // usePage might fail if not fully inside a Vue component context sometimes, fallback safely
+        }
+
+        // Fallback to localStorage
+        if (!savedAppearance) {
+            savedAppearance = localStorage.getItem('appearance') as Appearance | null;
+        }
 
         if (savedAppearance) {
             appearance.value = savedAppearance;
+            updateTheme(savedAppearance); // Ensure dom follows backend truth
         }
     });
 
@@ -114,6 +129,16 @@ export function useAppearance(): UseAppearanceReturn {
         setCookie('appearance', value);
 
         updateTheme(value);
+
+        if (typeof window !== 'undefined') {
+            import('@inertiajs/vue3').then(({ router }) => {
+                router.post('/preferences', { theme: value }, {
+                    preserveScroll: true,
+                    preserveState: true,
+                    onError: () => {}
+                });
+            });
+        }
     }
 
     return {

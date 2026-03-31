@@ -91,6 +91,7 @@
 </template>
 
 <script setup lang="ts">
+import Compressor from 'compressorjs';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import ProfileLayout from '@/Layouts/ProfileLayout.vue';
@@ -115,8 +116,20 @@ const avatarPreview = ref<string | null>(avatarUrl || null);
 const handleFileChange = (e: Event) => {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (file) {
-        form.avatar = file;
-        avatarPreview.value = URL.createObjectURL(file);
+        new Compressor(file, {
+            quality: 0.8,
+            maxWidth: 1000,
+            success(result) {
+                const optimizedFile = new File([result], file.name, { type: result.type });
+                form.avatar = optimizedFile;
+                avatarPreview.value = URL.createObjectURL(optimizedFile);
+            },
+            error(err) {
+                console.error('Compression error:', err.message);
+                form.avatar = file;
+                avatarPreview.value = URL.createObjectURL(file);
+            }
+        });
     }
 };
 
