@@ -39,8 +39,8 @@ class AdminUserSeeder extends Seeder
             ]
         );
 
-        if (!$admin->hasRole('visitor')) {
-            $admin->assignRole('visitor');
+        if (!$superAdmin->hasRole('visitor')) {
+            $superAdmin->assignRole('visitor');
         }
     }
 }
