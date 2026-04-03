@@ -35,32 +35,37 @@ class ProcessIdentityImages implements ShouldQueue
             
             if (!$localPath) continue;
 
-            $fullLocalPath = Storage::disk('local')->path($localPath);
+            // Use the same logic as the controller to figure out where TEMP files are
+            $tempDiskName = app()->environment('local', 'testing') ? 'local' : 'r2_private';
+            $tempDisk = Storage::disk($tempDiskName);
 
-            if (!file_exists($fullLocalPath)) continue;
+            if (!$tempDisk->exists($localPath)) {
+                throw new \Exception("Identity image missing on temp disk [{$tempDiskName}]: {$localPath}");
+            }
 
-            $image = $manager->read($fullLocalPath);
+            // read() accepts binary data directly
+            $image = $manager->read($tempDisk->get($localPath));
             $encoded = $image->scaleDown(width: 1600)->toWebp(quality: 80);
 
             $filename = 'users/' . $this->verification->user_id . '/identity/' . $this->verification->id . '/' . uniqid() . '.webp';
             
-            $diskName = app()->environment('local', 'testing') ? 'public' : 'r2_private';
+            $destDiskName = app()->environment('local', 'testing') ? 'public' : 'r2_private';
             
-            // Upload to appropriate disk
-            $uploaded = Storage::disk($diskName)->put($filename, $encoded->toString());
+            // Upload to destination disk
+            $uploaded = Storage::disk($destDiskName)->put($filename, $encoded->toString());
 
             if (! $uploaded) {
-                \Illuminate\Support\Facades\Log::error("Failed to upload identity image to {$diskName}", [
+                \Illuminate\Support\Facades\Log::error("Failed to upload identity image to {$destDiskName}", [
                     'verification_id' => $this->verification->id,
                     'file' => $filename
                 ]);
-                throw new \Exception("Upload to disk {$diskName} failed for file {$filename}");
+                throw new \Exception("Upload to disk {$destDiskName} failed for file {$filename}");
             }
 
-            // Delete from local temp
-            @unlink($fullLocalPath);
+            // Delete from temp disk
+            $tempDisk->delete($localPath);
 
-            // Update verification DB record with the private s3 path
+            // Update verification DB record with the final s3 path
             $this->verification->update([$field => $filename]);
         }
     }

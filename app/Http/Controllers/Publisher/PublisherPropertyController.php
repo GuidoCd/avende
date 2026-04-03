@@ -160,10 +160,11 @@ class PublisherPropertyController extends Controller
                 // Determine if it's the first image to automatically make it main
                 $isFirst = $property->getMedia('images')->count() === 0;
 
-                // Store temporarily on local disk to be processed by the job
-                $path = $file->store('tmp/property-images', 'local');
+                // Store temporarily on r2_private (or local) to be processed by the job across distributed workers
+                $diskName = app()->environment('local', 'testing') ? 'local' : 'r2_private';
+                $path = $file->store('tmp/property-images', $diskName);
 
-                ProcessPropertyImage::dispatch($property, Storage::disk('local')->path($path), $isFirst);
+                ProcessPropertyImage::dispatch($property, $path, $isFirst);
             }
         }
 

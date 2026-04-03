@@ -59,9 +59,10 @@ class IdentityVerificationController extends Controller
             return back()->with('error', __('Ya tienes una solicitud en proceso.'));
         }
 
-        $frontPath = $request->file('document_front')->store('tmp/identity', 'local');
-        $backPath = $request->hasFile('document_back') ? $request->file('document_back')->store('tmp/identity', 'local') : null;
-        $selfiePath = $request->file('selfie')->store('tmp/identity', 'local');
+        $diskName = app()->environment('local', 'testing') ? 'local' : 'r2_private';
+        $frontPath = $request->file('document_front')->store('tmp/identity', $diskName);
+        $backPath = $request->hasFile('document_back') ? $request->file('document_back')->store('tmp/identity', $diskName) : null;
+        $selfiePath = $request->file('selfie')->store('tmp/identity', $diskName);
 
         $verification = UserIdentityVerification::create([
             'user_id' => $userId,

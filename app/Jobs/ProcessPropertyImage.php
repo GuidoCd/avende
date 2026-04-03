@@ -32,12 +32,16 @@ class ProcessPropertyImage implements ShouldQueue
      */
     public function handle(): void
     {
-        if (!file_exists($this->imagePath)) {
-            return;
+        $diskName = app()->environment('local', 'testing') ? 'local' : 'r2_private';
+        $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
+
+        if (!$disk->exists($this->imagePath)) {
+            throw new \Exception("Temporary property image missing on disk [{$diskName}]: {$this->imagePath}");
         }
 
         $manager = new ImageManager(new Driver());
-        $image = $manager->read($this->imagePath);
+        // read() can handle binary file contents directly
+        $image = $manager->read($disk->get($this->imagePath));
 
         $encoded = $image->scaleDown(width: 1920)->toWebp(quality: 80);
 
@@ -49,6 +53,6 @@ class ProcessPropertyImage implements ShouldQueue
             ->toMediaCollection('images');
 
         // Clean up temporary image
-        @unlink($this->imagePath);
+        $disk->delete($this->imagePath);
     }
 }
