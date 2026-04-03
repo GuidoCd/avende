@@ -136,7 +136,10 @@ class Property extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
+        $diskName = app()->environment('local', 'testing') ? 'public' : 'r2_public';
+
         $this->addMediaCollection('images')
+            ->useDisk($diskName)
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
     }
 

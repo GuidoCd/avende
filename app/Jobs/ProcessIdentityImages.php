@@ -47,7 +47,15 @@ class ProcessIdentityImages implements ShouldQueue
             $diskName = app()->environment('local', 'testing') ? 'public' : 'r2_private';
             
             // Upload to appropriate disk
-            Storage::disk($diskName)->put($filename, $encoded->toString());
+            $uploaded = Storage::disk($diskName)->put($filename, $encoded->toString());
+
+            if (! $uploaded) {
+                \Illuminate\Support\Facades\Log::error("Failed to upload identity image to {$diskName}", [
+                    'verification_id' => $this->verification->id,
+                    'file' => $filename
+                ]);
+                throw new \Exception("Upload to disk {$diskName} failed for file {$filename}");
+            }
 
             // Delete from local temp
             @unlink($fullLocalPath);
